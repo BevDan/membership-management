@@ -161,13 +161,16 @@ class ExportFilters(BaseModel):
     receive_sms: Optional[bool] = None
     interest: Optional[Literal['Drag Racing', 'Car Enthusiast', 'Both']] = None
 
-async def get_current_user(session_token: Optional[str] = Cookie(None), authorization: Optional[str] = Header(None, alias="Authorization")) -> User:
+async def get_current_user(request: Request, session_token: Optional[str] = Cookie(None)) -> User:
     token = session_token
-    if not token and authorization:
-        if authorization.startswith('Bearer '):
-            token = authorization[7:]
     
-    logging.info(f"Auth attempt - Cookie token: {session_token}, Auth header: {authorization}, Final token: {token}")
+    # Try to get token from Authorization header if not in cookie
+    if not token:
+        auth_header = request.headers.get("authorization")
+        if auth_header and auth_header.startswith('Bearer '):
+            token = auth_header[7:]
+    
+    logging.info(f"Auth attempt - Cookie token: {session_token}, Auth header: {request.headers.get('authorization')}, Final token: {token}")
     
     if not token:
         logging.warning("No token provided")
