@@ -75,8 +75,8 @@ function BulkUploadPage({ user }) {
 
   const downloadMemberTemplate = () => {
     const headers = [
-      'member_number', 'name', 'address', 'suburb', 'postcode', 'phone1', 'phone2',
-      'email1', 'email2', 'life_member', 'financial', 'membership_type',
+      'member_number', 'name', 'address', 'suburb', 'postcode', 'state', 'phone1', 'phone2',
+      'email1', 'email2', 'life_member', 'financial', 'membership_type', 'family_members',
       'interest', 'date_paid', 'expiry_date', 'comments', 'receive_emails', 'receive_sms'
     ];
     const csvContent = headers.join(',') + '\n';
@@ -174,8 +174,9 @@ function BulkUploadPage({ user }) {
             <div className="mt-6 p-4 bg-zinc-950 rounded-sm">
               <p className="font-mono text-xs text-zinc-400 uppercase mb-2">CSV Format Notes:</p>
               <ul className="font-mono text-xs text-zinc-500 space-y-1">
-                <li>• Required: name, address, suburb, postcode</li>
-                <li>• member_number: Include existing numbers or leave blank for auto-generation</li>
+                <li>• Required: name, address, suburb, postcode, state</li>
+                <li>• member_number: Include existing numbers or leave blank</li>
+                <li>• family_members: Separate names with semicolons (e.g., "Jane;John Jr")</li>
                 <li>• Dates: YYYY-MM-DD format</li>
                 <li>• Booleans: true/false or yes/no</li>
               </ul>
