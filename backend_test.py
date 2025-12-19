@@ -404,6 +404,57 @@ Bulk Test Member,456 Bulk St,Bulk Suburb,67890,0487654321,bulk.test@example.com,
         if success and response.headers.get('content-type') == 'text/csv':
             print(f"    Export successful, CSV content length: {len(response.content)}")
 
+    def test_printable_member_list(self):
+        """Test new printable member list endpoint"""
+        print("\n📋 Testing Printable Member List...")
+        
+        token = self.test_sessions['admin']
+        
+        # Test the new printable member list endpoint
+        response = self.make_request('GET', 'members/printable-list', token)
+        success = response and response.status_code == 200
+        
+        if success:
+            members = response.json()
+            # Verify it returns a list
+            success = isinstance(members, list)
+            self.log_test("Get printable member list", success,
+                         f"Status: {response.status_code}, Members count: {len(members) if success else 'N/A'}")
+            
+            # Verify each member has required fields
+            if success and len(members) > 0:
+                first_member = members[0]
+                has_required_fields = 'member_number' in first_member and 'name' in first_member
+                self.log_test("Printable list has required fields", has_required_fields,
+                             f"Fields: {list(first_member.keys()) if isinstance(first_member, dict) else 'Invalid format'}")
+                
+                # Check if members are sorted by member_number
+                if len(members) > 1:
+                    is_sorted = True
+                    for i in range(1, len(members)):
+                        try:
+                            prev_num = int(members[i-1]['member_number'])
+                            curr_num = int(members[i]['member_number'])
+                            if prev_num > curr_num:
+                                is_sorted = False
+                                break
+                        except (ValueError, KeyError):
+                            # Handle non-numeric member numbers
+                            prev_str = str(members[i-1].get('member_number', ''))
+                            curr_str = str(members[i].get('member_number', ''))
+                            if prev_str > curr_str:
+                                is_sorted = False
+                                break
+                    
+                    self.log_test("Printable list is sorted by member_number", is_sorted,
+                                 f"First: {members[0].get('member_number')}, Last: {members[-1].get('member_number')}")
+            else:
+                self.log_test("Printable list has members", len(members) > 0,
+                             "No members found in printable list")
+        else:
+            self.log_test("Get printable member list", False,
+                         f"Status: {response.status_code if response else 'No response'}", True)
+
     def test_member_editor_restrictions(self):
         """Test that member_editor cannot access vehicle creation"""
         print("\n🚫 Testing Member Editor Restrictions...")
