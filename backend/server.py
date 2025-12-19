@@ -386,10 +386,13 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
     
     # Get all members and vehicles
     members = await db.members.find({}, {"_id": 0}).to_list(10000)
-    vehicles = await db.vehicles.find({"archived": False}, {"_id": 0, "member_id": 1}).to_list(10000)
+    vehicles = await db.vehicles.find({"archived": False}, {"_id": 0, "member_id": 1, "status": 1}).to_list(10000)
     
     # Create set of member_ids that have vehicles
     members_with_vehicles = set(v["member_id"] for v in vehicles)
+    
+    # Count only active vehicles
+    active_vehicles = sum(1 for v in vehicles if v.get("status") == "Active")
     
     # Calculate statistics
     total_members = len(members)
@@ -421,6 +424,7 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
         "members_with_vehicle_financial": members_with_vehicle_financial,
         "members_with_vehicle_unfinancial": members_with_vehicle_unfinancial,
         "total_vehicles": len(vehicles),
+        "active_vehicles": active_vehicles,
         "interest": {
             "drag_racing": interest_drag_racing,
             "car_enthusiast": interest_car_enthusiast,
