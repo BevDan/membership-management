@@ -90,7 +90,9 @@ function AdminPage({ user }) {
       setShowUserDialog(false);
       loadUsers();
     } catch (error) {
-      toast.error('Failed to save user');
+      const errorMsg = error.response?.data?.detail || 'Failed to save user';
+      toast.error(errorMsg);
+      console.error('User save error:', error.response?.data);
     }
   };
 
