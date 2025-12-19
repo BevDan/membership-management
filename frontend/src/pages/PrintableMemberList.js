@@ -166,7 +166,7 @@ function PrintableMemberList() {
         @media print {
           @page {
             size: A4 portrait;
-            margin: 1cm;
+            margin: 0.5cm;
           }
           body {
             -webkit-print-color-adjust: exact;
@@ -180,13 +180,18 @@ function PrintableMemberList() {
             display: block !important;
           }
           table {
-            font-size: 10pt;
+            font-size: 8pt;
+            line-height: 1.1;
           }
           tr {
             page-break-inside: avoid;
           }
           td, th {
             color: black !important;
+            padding: 1px 4px !important;
+          }
+          th {
+            padding: 2px 4px !important;
           }
         }
       `}</style>
