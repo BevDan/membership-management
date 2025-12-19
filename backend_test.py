@@ -99,23 +99,37 @@ class DragClubAPITester:
             headers['Authorization'] = f'Bearer {token}'
         
         try:
+            print(f"    Making {method} request to: {url}")
+            if token:
+                print(f"    Using token: {token[:20]}...")
+            
             if method == 'GET':
-                response = requests.get(url, headers=headers, timeout=10)
+                response = requests.get(url, headers=headers, timeout=30, verify=True)
             elif method == 'POST':
                 if files:
                     # Remove Content-Type for file uploads
                     headers.pop('Content-Type', None)
-                    response = requests.post(url, headers=headers, files=files, timeout=10)
+                    response = requests.post(url, headers=headers, files=files, timeout=30, verify=True)
                 else:
-                    response = requests.post(url, headers=headers, json=data, timeout=10)
+                    response = requests.post(url, headers=headers, json=data, timeout=30, verify=True)
             elif method == 'PUT':
-                response = requests.put(url, headers=headers, json=data, timeout=10)
+                response = requests.put(url, headers=headers, json=data, timeout=30, verify=True)
             elif method == 'DELETE':
-                response = requests.delete(url, headers=headers, timeout=10)
+                response = requests.delete(url, headers=headers, timeout=30, verify=True)
             
+            print(f"    Response status: {response.status_code}")
             return response
+        except requests.exceptions.Timeout as e:
+            print(f"    Request timeout: {str(e)}")
+            return None
+        except requests.exceptions.ConnectionError as e:
+            print(f"    Connection error: {str(e)}")
+            return None
+        except requests.exceptions.RequestException as e:
+            print(f"    Request error: {str(e)}")
+            return None
         except Exception as e:
-            print(f"    Request failed: {str(e)}")
+            print(f"    Unexpected error: {str(e)}")
             return None
 
     def test_authentication(self):
