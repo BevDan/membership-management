@@ -301,7 +301,7 @@ function MembersPage({ user }) {
             <div className="md:col-span-3">
               <Label className="text-zinc-400 font-mono text-xs uppercase">Search By</Label>
               <Select value={searchType} onValueChange={setSearchType}>
-                <SelectTrigger data-testid="search-type-select" className="bg-zinc-950 border-zinc-800 font-mono">
+                <SelectTrigger data-testid="search-type-select" className="bg-zinc-950 border-zinc-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -326,7 +326,7 @@ function MembersPage({ user }) {
                     onFocus={() => setShowMemberNumberDropdown(true)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="Select or type member number"
-                    className="bg-zinc-950 border-zinc-800 font-mono"
+                    className="bg-zinc-950 border-zinc-800"
                   />
                   {showMemberNumberDropdown && filteredMemberNumbers.length > 0 && (
                     <div className="absolute z-50 w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-sm max-h-64 overflow-y-auto">
@@ -358,7 +358,7 @@ function MembersPage({ user }) {
                     onFocus={() => setShowNameDropdown(true)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="Select or type member name"
-                    className="bg-zinc-950 border-zinc-800 font-mono"
+                    className="bg-zinc-950 border-zinc-800"
                   />
                   {showNameDropdown && filteredMemberNames.length > 0 && searchTerm && (
                     <div className="absolute z-50 w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-sm max-h-64 overflow-y-auto">
@@ -497,7 +497,7 @@ function MembersPage({ user }) {
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
+                className="bg-zinc-950 border-zinc-800"
               />
             </div>
             <div>
@@ -505,7 +505,7 @@ function MembersPage({ user }) {
               <Input
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
+                className="bg-zinc-950 border-zinc-800"
               />
             </div>
             <div>
@@ -519,7 +519,7 @@ function MembersPage({ user }) {
                   }}
                   onFocus={() => setShowSuburbDropdown(true)}
                   placeholder="Type or select suburb"
-                  className="bg-zinc-950 border-zinc-800 font-mono"
+                  className="bg-zinc-950 border-zinc-800"
                 />
                 {showSuburbDropdown && filteredSuburbs.length > 0 && suburbInput && (
                   <div className="absolute z-50 w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-sm max-h-48 overflow-y-auto">
@@ -545,7 +545,7 @@ function MembersPage({ user }) {
               <Input
                 value={formData.postcode}
                 onChange={(e) => setFormData({ ...formData, postcode: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
+                className="bg-zinc-950 border-zinc-800"
               />
             </div>
             <div>
@@ -554,7 +554,7 @@ function MembersPage({ user }) {
                 value={formData.state}
                 onValueChange={(value) => setFormData({ ...formData, state: value })}
               >
-                <SelectTrigger className="bg-zinc-950 border-zinc-800 font-mono">
+                <SelectTrigger className="bg-zinc-950 border-zinc-800">
                   <SelectValue placeholder="Select state" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -574,7 +574,7 @@ function MembersPage({ user }) {
               <Input
                 value={formData.phone1}
                 onChange={(e) => setFormData({ ...formData, phone1: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
+                className="bg-zinc-950 border-zinc-800"
               />
             </div>
             <div>
@@ -582,7 +582,7 @@ function MembersPage({ user }) {
               <Input
                 value={formData.phone2}
                 onChange={(e) => setFormData({ ...formData, phone2: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
+                className="bg-zinc-950 border-zinc-800"
               />
             </div>
             <div>
@@ -590,7 +590,7 @@ function MembersPage({ user }) {
               <Input
                 value={formData.email1}
                 onChange={(e) => setFormData({ ...formData, email1: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
+                className="bg-zinc-950 border-zinc-800"
               />
             </div>
             <div>
@@ -598,7 +598,7 @@ function MembersPage({ user }) {
               <Input
                 value={formData.email2}
                 onChange={(e) => setFormData({ ...formData, email2: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
+                className="bg-zinc-950 border-zinc-800"
               />
             </div>
             <div className="md:col-span-2">
@@ -607,7 +607,7 @@ function MembersPage({ user }) {
                 value={formData.membership_type}
                 onValueChange={(value) => setFormData({ ...formData, membership_type: value })}
               >
-                <SelectTrigger className="bg-zinc-950 border-zinc-800 font-mono">
+                <SelectTrigger className="bg-zinc-950 border-zinc-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -628,7 +628,7 @@ function MembersPage({ user }) {
                         value={member}
                         onChange={(e) => updateFamilyMember(index, e.target.value)}
                         placeholder="Family member name"
-                        className="bg-zinc-900 border-zinc-800 font-mono"
+                        className="bg-zinc-900 border-zinc-800"
                       />
                       <Button
                         type="button"
@@ -662,7 +662,7 @@ function MembersPage({ user }) {
                 value={formData.interest}
                 onValueChange={(value) => setFormData({ ...formData, interest: value })}
               >
-                <SelectTrigger className="bg-zinc-950 border-zinc-800 font-mono">
+                <SelectTrigger className="bg-zinc-950 border-zinc-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -678,7 +678,7 @@ function MembersPage({ user }) {
                 type="date"
                 value={formData.date_paid}
                 onChange={(e) => setFormData({ ...formData, date_paid: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
+                className="bg-zinc-950 border-zinc-800"
               />
             </div>
             <div>
@@ -687,7 +687,7 @@ function MembersPage({ user }) {
                 type="date"
                 value={formData.expiry_date}
                 onChange={(e) => setFormData({ ...formData, expiry_date: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
+                className="bg-zinc-950 border-zinc-800"
               />
             </div>
             <div className="md:col-span-2">
@@ -695,7 +695,7 @@ function MembersPage({ user }) {
               <Textarea
                 value={formData.comments}
                 onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
+                className="bg-zinc-950 border-zinc-800"
                 rows={3}
               />
             </div>
