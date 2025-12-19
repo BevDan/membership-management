@@ -1,0 +1,504 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Card } from '../components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Textarea } from '../components/ui/textarea';
+import { Switch } from '../components/ui/switch';
+import { ArrowLeft, Search, Plus, Edit, Trash } from 'lucide-react';
+import { toast } from 'sonner';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+function MembersPage({ user }) {
+  const navigate = useNavigate();
+  const [members, setMembers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchType, setSearchType] = useState('name');
+  const [showDialog, setShowDialog] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    address: '',
+    suburb: '',
+    postcode: '',
+    phone1: '',
+    phone2: '',
+    email1: '',
+    email2: '',
+    life_member: false,
+    financial: false,
+    membership_type: 'Full',
+    interest: 'Both',
+    date_paid: '',
+    expiry_date: '',
+    comments: '',
+    receive_emails: true,
+    receive_sms: true
+  });
+
+  useEffect(() => {
+    loadMembers();
+  }, []);
+
+  const loadMembers = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/members`, {
+        withCredentials: true
+      });
+      setMembers(response.data);
+    } catch (error) {
+      toast.error('Failed to load members');
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!searchTerm) {
+      loadMembers();
+      return;
+    }
+
+    try {
+      const params = searchType === 'number' 
+        ? { member_number: parseInt(searchTerm) }
+        : { search: searchTerm };
+      
+      const response = await axios.get(`${BACKEND_URL}/api/members`, {
+        params,
+        withCredentials: true
+      });
+      setMembers(response.data);
+    } catch (error) {
+      toast.error('Search failed');
+    }
+  };
+
+  const handleCreate = () => {
+    setEditingMember(null);
+    setFormData({
+      name: '',
+      address: '',
+      suburb: '',
+      postcode: '',
+      phone1: '',
+      phone2: '',
+      email1: '',
+      email2: '',
+      life_member: false,
+      financial: false,
+      membership_type: 'Full',
+      interest: 'Both',
+      date_paid: '',
+      expiry_date: '',
+      comments: '',
+      receive_emails: true,
+      receive_sms: true
+    });
+    setShowDialog(true);
+  };
+
+  const handleEdit = (member) => {
+    setEditingMember(member);
+    setFormData({
+      name: member.name,
+      address: member.address,
+      suburb: member.suburb,
+      postcode: member.postcode,
+      phone1: member.phone1 || '',
+      phone2: member.phone2 || '',
+      email1: member.email1 || '',
+      email2: member.email2 || '',
+      life_member: member.life_member,
+      financial: member.financial,
+      membership_type: member.membership_type,
+      interest: member.interest,
+      date_paid: member.date_paid ? member.date_paid.split('T')[0] : '',
+      expiry_date: member.expiry_date ? member.expiry_date.split('T')[0] : '',
+      comments: member.comments || '',
+      receive_emails: member.receive_emails,
+      receive_sms: member.receive_sms
+    });
+    setShowDialog(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      if (editingMember) {
+        await axios.put(
+          `${BACKEND_URL}/api/members/${editingMember.member_id}`,
+          formData,
+          { withCredentials: true }
+        );
+        toast.success('Member updated');
+      } else {
+        await axios.post(
+          `${BACKEND_URL}/api/members`,
+          formData,
+          { withCredentials: true }
+        );
+        toast.success('Member created');
+      }
+      setShowDialog(false);
+      loadMembers();
+    } catch (error) {
+      toast.error('Failed to save member');
+    }
+  };
+
+  const handleDelete = async (memberId) => {
+    if (!window.confirm('Are you sure you want to delete this member? All associated vehicles will also be deleted.')) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${BACKEND_URL}/api/members/${memberId}`, {
+        withCredentials: true
+      });
+      toast.success('Member deleted');
+      loadMembers();
+    } catch (error) {
+      toast.error('Failed to delete member');
+    }
+  };
+
+  const isAdmin = user && user.role === 'admin';
+
+  return (
+    <div className="min-h-screen bg-zinc-950">
+      <header className="bg-zinc-900 border-b-4 border-primary shadow-lg sticky top-0 z-50">
+        <div className="max-w-[1600px] mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                data-testid="back-button"
+                onClick={() => navigate('/dashboard')}
+                variant="outline"
+                size="sm"
+                className="font-mono border-zinc-700"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <div>
+                <h1 className="font-display text-xl sm:text-2xl font-black text-white">
+                  MEMBER MANAGEMENT
+                </h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-[1600px] mx-auto px-6 py-8">
+        <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-primary p-6 rounded-sm mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div className="md:col-span-3">
+              <Label className="text-zinc-400 font-mono text-xs uppercase">Search By</Label>
+              <Select value={searchType} onValueChange={setSearchType}>
+                <SelectTrigger data-testid="search-type-select" className="bg-zinc-950 border-zinc-800 font-mono">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-zinc-800">
+                  <SelectItem value="name">Name/Email</SelectItem>
+                  <SelectItem value="number">Member Number</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="md:col-span-7">
+              <Label className="text-zinc-400 font-mono text-xs uppercase">
+                {searchType === 'number' ? 'Member Number' : 'Name or Email'}
+              </Label>
+              <Input
+                data-testid="search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder={searchType === 'number' ? 'Enter member number' : 'Enter name or email'}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div className="md:col-span-2 flex items-end gap-2">
+              <Button
+                data-testid="search-button"
+                onClick={handleSearch}
+                className="flex-1 bg-primary hover:bg-primary/90 font-mono uppercase"
+              >
+                <Search className="w-4 h-4 mr-2" />
+                Search
+              </Button>
+              <Button
+                data-testid="add-member-button"
+                onClick={handleCreate}
+                className="flex-1 bg-secondary hover:bg-secondary/90 text-zinc-900 font-mono uppercase"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        <div className="grid grid-cols-1 gap-4">
+          {members.length === 0 ? (
+            <Card className="bg-zinc-900 border-zinc-800 p-8 text-center">
+              <p className="font-mono text-zinc-400">No members found</p>
+            </Card>
+          ) : (
+            members.map((member) => (
+              <Card
+                key={member.member_id}
+                data-testid={`member-card-${member.member_number}`}
+                className="bg-zinc-900 border-zinc-800 border-l-4 border-l-primary p-6 rounded-sm"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <p className="font-mono text-xs text-zinc-500 uppercase mb-1">Member #{member.member_number}</p>
+                      <p className="font-display text-xl font-bold text-white">{member.name}</p>
+                      <p className="font-mono text-sm text-zinc-400 mt-2">
+                        {member.address}, {member.suburb} {member.postcode}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-mono text-xs text-zinc-500 uppercase mb-1">Contact</p>
+                      {member.phone1 && <p className="font-mono text-sm text-zinc-300">{member.phone1}</p>}
+                      {member.email1 && <p className="font-mono text-sm text-zinc-300">{member.email1}</p>}
+                    </div>
+                    <div>
+                      <p className="font-mono text-xs text-zinc-500 uppercase mb-1">Status</p>
+                      <div className="flex flex-wrap gap-2">
+                        {member.financial && (
+                          <span className="px-2 py-1 bg-green-500/20 text-green-400 font-mono text-xs uppercase rounded-sm">
+                            Financial
+                          </span>
+                        )}
+                        {member.life_member && (
+                          <span className="px-2 py-1 bg-primary/20 text-primary font-mono text-xs uppercase rounded-sm">
+                            Life Member
+                          </span>
+                        )}
+                        <span className="px-2 py-1 bg-zinc-800 text-zinc-300 font-mono text-xs uppercase rounded-sm">
+                          {member.membership_type}
+                        </span>
+                        <span className="px-2 py-1 bg-accent/20 text-accent font-mono text-xs uppercase rounded-sm">
+                          {member.interest}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      data-testid={`edit-member-${member.member_number}`}
+                      onClick={() => handleEdit(member)}
+                      variant="outline"
+                      size="sm"
+                      className="border-zinc-700 hover:border-secondary"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    {isAdmin && (
+                      <Button
+                        data-testid={`delete-member-${member.member_number}`}
+                        onClick={() => handleDelete(member.member_id)}
+                        variant="outline"
+                        size="sm"
+                        className="border-zinc-700 hover:border-red-500"
+                      >
+                        <Trash className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
+      </main>
+
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl text-white">
+              {editingMember ? 'EDIT MEMBER' : 'NEW MEMBER'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Name *</Label>
+              <Input
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Address *</Label>
+              <Input
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Suburb *</Label>
+              <Input
+                value={formData.suburb}
+                onChange={(e) => setFormData({ ...formData, suburb: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Postcode *</Label>
+              <Input
+                value={formData.postcode}
+                onChange={(e) => setFormData({ ...formData, postcode: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Phone 1</Label>
+              <Input
+                value={formData.phone1}
+                onChange={(e) => setFormData({ ...formData, phone1: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Phone 2</Label>
+              <Input
+                value={formData.phone2}
+                onChange={(e) => setFormData({ ...formData, phone2: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Email 1</Label>
+              <Input
+                value={formData.email1}
+                onChange={(e) => setFormData({ ...formData, email1: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Email 2</Label>
+              <Input
+                value={formData.email2}
+                onChange={(e) => setFormData({ ...formData, email2: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Membership Type</Label>
+              <Select
+                value={formData.membership_type}
+                onValueChange={(value) => setFormData({ ...formData, membership_type: value })}
+              >
+                <SelectTrigger className="bg-zinc-950 border-zinc-800 font-mono">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-zinc-800">
+                  <SelectItem value="Full">Full</SelectItem>
+                  <SelectItem value="Family">Family</SelectItem>
+                  <SelectItem value="Junior">Junior</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Interest</Label>
+              <Select
+                value={formData.interest}
+                onValueChange={(value) => setFormData({ ...formData, interest: value })}
+              >
+                <SelectTrigger className="bg-zinc-950 border-zinc-800 font-mono">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-zinc-800">
+                  <SelectItem value="Drag Racing">Drag Racing</SelectItem>
+                  <SelectItem value="Car Enthusiast">Car Enthusiast</SelectItem>
+                  <SelectItem value="Both">Both</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Date Paid</Label>
+              <Input
+                type="date"
+                value={formData.date_paid}
+                onChange={(e) => setFormData({ ...formData, date_paid: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">Expiry Date</Label>
+              <Input
+                type="date"
+                value={formData.expiry_date}
+                onChange={(e) => setFormData({ ...formData, expiry_date: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label className="text-zinc-400 font-mono text-xs">Comments</Label>
+              <Textarea
+                value={formData.comments}
+                onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+                className="bg-zinc-950 border-zinc-800 font-mono"
+                rows={3}
+              />
+            </div>
+            <div className="flex items-center justify-between p-3 bg-zinc-950 rounded-sm">
+              <Label className="text-zinc-400 font-mono text-xs">Life Member</Label>
+              <Switch
+                checked={formData.life_member}
+                onCheckedChange={(checked) => setFormData({ ...formData, life_member: checked })}
+              />
+            </div>
+            <div className="flex items-center justify-between p-3 bg-zinc-950 rounded-sm">
+              <Label className="text-zinc-400 font-mono text-xs">Financial</Label>
+              <Switch
+                checked={formData.financial}
+                onCheckedChange={(checked) => setFormData({ ...formData, financial: checked })}
+              />
+            </div>
+            <div className="flex items-center justify-between p-3 bg-zinc-950 rounded-sm">
+              <Label className="text-zinc-400 font-mono text-xs">Receive Emails</Label>
+              <Switch
+                checked={formData.receive_emails}
+                onCheckedChange={(checked) => setFormData({ ...formData, receive_emails: checked })}
+              />
+            </div>
+            <div className="flex items-center justify-between p-3 bg-zinc-950 rounded-sm">
+              <Label className="text-zinc-400 font-mono text-xs">Receive SMS</Label>
+              <Switch
+                checked={formData.receive_sms}
+                onCheckedChange={(checked) => setFormData({ ...formData, receive_sms: checked })}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-4 mt-6">
+            <Button
+              onClick={() => setShowDialog(false)}
+              variant="outline"
+              className="border-zinc-700 font-mono uppercase"
+            >
+              Cancel
+            </Button>
+            <Button
+              data-testid="save-member-button"
+              onClick={handleSave}
+              className="bg-primary hover:bg-primary/90 font-mono uppercase"
+            >
+              {editingMember ? 'Update' : 'Create'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+export default MembersPage;
