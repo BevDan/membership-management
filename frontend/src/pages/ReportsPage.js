@@ -215,13 +215,13 @@ function ReportsPage() {
                     key={member.member_id} 
                     className={`border-b border-zinc-800 print:border-gray-300 ${getRowStyle(member)}`}
                   >
-                    <td className="py-1.5 px-3 font-mono text-sm text-zinc-300 print:text-black">
+                    <td className="py-1.5 px-3 text-sm text-zinc-300 print:text-black font-medium">
                       {member.member_number}
                     </td>
                     <td className="py-1.5 px-3 text-sm text-white print:text-black font-medium">
                       {member.name}
                     </td>
-                    <td className="py-1.5 px-3 font-mono text-sm text-zinc-400 print:text-black">
+                    <td className="py-1.5 px-3 text-sm text-zinc-400 print:text-black">
                       {member.phone || '-'}
                     </td>
                     <td className="py-1.5 px-3 text-sm text-zinc-400 print:text-black">
