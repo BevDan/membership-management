@@ -517,9 +517,8 @@ async def update_vehicle(vehicle_id: str, vehicle_data: VehicleUpdate, current_u
     return Vehicle(**vehicle)
 
 @api_router.delete("/vehicles/{vehicle_id}")
-async def archive_vehicle(vehicle_id: str):
-    user = await get_current_user()
-    if user.role == "member_editor":
+async def archive_vehicle(vehicle_id: str, current_user: User = Depends(get_current_user)):
+    if current_user.role == "member_editor":
         raise HTTPException(status_code=403, detail="Full editor or admin access required")
     
     result = await db.vehicles.update_one(
