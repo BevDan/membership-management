@@ -66,7 +66,7 @@ function Dashboard({ user }) {
             />
             <div>
               <h1 className="font-display text-xl sm:text-2xl font-black text-primary">
-                STEEL CITY <span className="text-white">[DRAG CLUB]</span>
+                STEEL CITY DRAG CLUB
               </h1>
               <p className="font-mono text-xs text-zinc-400 uppercase tracking-wider mt-1">
                 Control Room / {user?.role?.replace('_', ' ').toUpperCase()}
