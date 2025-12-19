@@ -208,7 +208,15 @@ function MembersPage({ user }) {
     try {
       const dataToSave = {
         ...formData,
-        suburb: suburbInput.trim() || formData.suburb || ''
+        suburb: suburbInput.trim() || formData.suburb || '',
+        // Convert empty email strings to null for validation
+        email1: formData.email1?.trim() || null,
+        email2: formData.email2?.trim() || null,
+        // Convert empty phone strings to null
+        phone1: formData.phone1?.trim() || null,
+        phone2: formData.phone2?.trim() || null,
+        // Convert empty comments to null
+        comments: formData.comments?.trim() || null
       };
       
       // Ensure required fields are not empty
