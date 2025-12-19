@@ -148,11 +148,17 @@ function AdminPage({ user }) {
 
   const handleClearAllData = async () => {
     try {
-      const response = await axios.delete(`${BACKEND_URL}/api/admin/clear-all-data`, {
-        params: { confirm: 'DELETE_ALL_DATA' },
-        withCredentials: true
-      });
+      const response = await axios.post(
+        `${BACKEND_URL}/api/admin/clear-all-data?confirm=DELETE_ALL_DATA`,
+        {},
+        { withCredentials: true }
+      );
       toast.success(`${response.data.message}. Deleted ${response.data.deleted_members} members and ${response.data.deleted_vehicles} vehicles.`);
+      
+      // Optionally navigate back to dashboard after clearing
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
     } catch (error) {
       toast.error('Failed to clear data: ' + (error.response?.data?.detail || error.message));
     }
