@@ -1138,9 +1138,16 @@ function MembersPage({ user }) {
       <Dialog open={showVehicleDialog} onOpenChange={setShowVehicleDialog}>
         <DialogContent className="bg-zinc-900 border-zinc-800 max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-xl text-white">
-              {editingVehicle ? 'EDIT VEHICLE' : 'ADD VEHICLE'}
-            </DialogTitle>
+            <div className="flex items-center gap-4">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_raceroster/artifacts/brmlixop_Enthusiast%20Logo.jpg" 
+                alt="Car Enthusiasts"
+                className="w-12 h-12 object-contain rounded"
+              />
+              <DialogTitle className="text-xl text-white">
+                {editingVehicle ? 'EDIT VEHICLE' : 'ADD VEHICLE'}
+              </DialogTitle>
+            </div>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
