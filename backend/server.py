@@ -50,6 +50,7 @@ class Member(BaseModel):
     address: str
     suburb: str
     postcode: str
+    state: str
     phone1: Optional[str] = None
     phone2: Optional[str] = None
     email1: Optional[EmailStr] = None
@@ -57,6 +58,7 @@ class Member(BaseModel):
     life_member: bool = False
     financial: bool = False
     membership_type: Literal['Full', 'Family', 'Junior']
+    family_members: Optional[List[str]] = None
     interest: Literal['Drag Racing', 'Car Enthusiast', 'Both']
     date_paid: Optional[datetime] = None
     expiry_date: Optional[datetime] = None
@@ -71,6 +73,7 @@ class MemberCreate(BaseModel):
     address: str
     suburb: str
     postcode: str
+    state: str
     phone1: Optional[str] = None
     phone2: Optional[str] = None
     email1: Optional[EmailStr] = None
@@ -78,6 +81,7 @@ class MemberCreate(BaseModel):
     life_member: bool = False
     financial: bool = False
     membership_type: Literal['Full', 'Family', 'Junior']
+    family_members: Optional[List[str]] = None
     interest: Literal['Drag Racing', 'Car Enthusiast', 'Both']
     date_paid: Optional[str] = None
     expiry_date: Optional[str] = None
@@ -90,6 +94,7 @@ class MemberUpdate(BaseModel):
     address: Optional[str] = None
     suburb: Optional[str] = None
     postcode: Optional[str] = None
+    state: Optional[str] = None
     phone1: Optional[str] = None
     phone2: Optional[str] = None
     email1: Optional[EmailStr] = None
@@ -97,6 +102,7 @@ class MemberUpdate(BaseModel):
     life_member: Optional[bool] = None
     financial: Optional[bool] = None
     membership_type: Optional[Literal['Full', 'Family', 'Junior']] = None
+    family_members: Optional[List[str]] = None
     interest: Optional[Literal['Drag Racing', 'Car Enthusiast', 'Both']] = None
     date_paid: Optional[str] = None
     expiry_date: Optional[str] = None
