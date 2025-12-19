@@ -397,11 +397,35 @@ function MembersPage({ user }) {
             </div>
             <div>
               <Label className="text-zinc-400 font-mono text-xs">Suburb *</Label>
-              <Input
-                value={formData.suburb}
-                onChange={(e) => setFormData({ ...formData, suburb: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
-              />
+              <div className="relative">
+                <Input
+                  value={suburbInput}
+                  onChange={(e) => {
+                    setSuburbInput(e.target.value);
+                    setShowSuburbDropdown(true);
+                  }}
+                  onFocus={() => setShowSuburbDropdown(true)}
+                  placeholder="Type or select suburb"
+                  className="bg-zinc-950 border-zinc-800 font-mono"
+                />
+                {showSuburbDropdown && filteredSuburbs.length > 0 && suburbInput && (
+                  <div className="absolute z-50 w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-sm max-h-48 overflow-y-auto">
+                    {filteredSuburbs.slice(0, 10).map((suburb, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => {
+                          setSuburbInput(suburb);
+                          setFormData({ ...formData, suburb: suburb });
+                          setShowSuburbDropdown(false);
+                        }}
+                        className="px-3 py-2 hover:bg-zinc-800 cursor-pointer font-mono text-sm text-zinc-300"
+                      >
+                        {suburb}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <Label className="text-zinc-400 font-mono text-xs">Postcode *</Label>
@@ -410,6 +434,27 @@ function MembersPage({ user }) {
                 onChange={(e) => setFormData({ ...formData, postcode: e.target.value })}
                 className="bg-zinc-950 border-zinc-800 font-mono"
               />
+            </div>
+            <div>
+              <Label className="text-zinc-400 font-mono text-xs">State *</Label>
+              <Select
+                value={formData.state}
+                onValueChange={(value) => setFormData({ ...formData, state: value })}
+              >
+                <SelectTrigger className="bg-zinc-950 border-zinc-800 font-mono">
+                  <SelectValue placeholder="Select state" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-zinc-800">
+                  <SelectItem value="NSW">NSW</SelectItem>
+                  <SelectItem value="VIC">VIC</SelectItem>
+                  <SelectItem value="QLD">QLD</SelectItem>
+                  <SelectItem value="SA">SA</SelectItem>
+                  <SelectItem value="WA">WA</SelectItem>
+                  <SelectItem value="TAS">TAS</SelectItem>
+                  <SelectItem value="NT">NT</SelectItem>
+                  <SelectItem value="ACT">ACT</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label className="text-zinc-400 font-mono text-xs">Phone 1</Label>
