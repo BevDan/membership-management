@@ -830,11 +830,11 @@ async def export_members(filters: ExportFilters, current_user: User = Depends(ge
 
 @api_router.post("/admin/clear-all-data")
 async def clear_all_data(
+    request: Request,
     confirm: str = Query(...),
-    session_token: Optional[str] = Cookie(None),
-    authorization: Optional[str] = Header(None)
+    session_token: Optional[str] = Cookie(None)
 ):
-    current_user = await get_current_user(session_token, authorization)
+    current_user = await get_current_user(request, session_token)
     
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
