@@ -566,9 +566,8 @@ async def get_vehicle_options(type: Optional[str] = None, current_user: User = D
     return options
 
 @api_router.post("/vehicle-options", response_model=VehicleOption)
-async def create_vehicle_option(option_data: VehicleOptionCreate):
-    user = await get_current_user()
-    if user.role != "admin":
+async def create_vehicle_option(option_data: VehicleOptionCreate, current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     option_id = f"option_{uuid.uuid4().hex[:12]}"
