@@ -511,7 +511,7 @@ function MembersPage({ user }) {
                           onClick={() => {
                             setSearchTerm(member.name);
                             setShowNameDropdown(false);
-                            setTimeout(() => handleSearch(), 100);
+                            handleSearch(member.name);
                           }}
                           className="px-3 py-2 hover:bg-zinc-800 cursor-pointer text-sm"
                         >
