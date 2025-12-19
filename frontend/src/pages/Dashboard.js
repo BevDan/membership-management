@@ -137,36 +137,36 @@ function Dashboard({ user }) {
         {/* Interest & Type Breakdown */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
-            <p className="font-mono text-xs text-zinc-400 uppercase mb-3">Members by Interest</p>
+            <p className="text-xs text-zinc-400 uppercase mb-3">Members by Interest</p>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-zinc-300">Drag Racing</span>
-                <span className="font-mono font-bold text-white">{stats.interest.drag_racing}</span>
+                <span className="font-bold text-white">{stats.interest.drag_racing}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-zinc-300">Car Enthusiast</span>
-                <span className="font-mono font-bold text-white">{stats.interest.car_enthusiast}</span>
+                <span className="font-bold text-white">{stats.interest.car_enthusiast}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-zinc-300">Both</span>
-                <span className="font-mono font-bold text-white">{stats.interest.both}</span>
+                <span className="font-bold text-white">{stats.interest.both}</span>
               </div>
             </div>
           </Card>
           <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
-            <p className="font-mono text-xs text-zinc-400 uppercase mb-3">Members by Type</p>
+            <p className="text-xs text-zinc-400 uppercase mb-3">Members by Type</p>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-zinc-300">Full</span>
-                <span className="font-mono font-bold text-white">{stats.membership_type.full}</span>
+                <span className="font-bold text-white">{stats.membership_type.full}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-zinc-300">Family</span>
-                <span className="font-mono font-bold text-white">{stats.membership_type.family}</span>
+                <span className="font-bold text-white">{stats.membership_type.family}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-zinc-300">Junior</span>
-                <span className="font-mono font-bold text-white">{stats.membership_type.junior}</span>
+                <span className="font-bold text-white">{stats.membership_type.junior}</span>
               </div>
             </div>
           </Card>
