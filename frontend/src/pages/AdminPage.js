@@ -183,6 +183,9 @@ function AdminPage({ user }) {
             <TabsTrigger data-testid="tab-vehicle-options" value="vehicle-options" className="font-mono uppercase">
               Vehicle Options
             </TabsTrigger>
+            <TabsTrigger data-testid="tab-data-management" value="data-management" className="font-mono uppercase">
+              Data Management
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -308,6 +311,62 @@ function AdminPage({ user }) {
                       </Card>
                     ))}
                   </div>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="data-management">
+            <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-red-500 p-6 rounded-sm">
+              <h2 className="font-display text-2xl font-black text-white mb-4">DANGER ZONE</h2>
+              
+              <div className="space-y-6">
+                <div className="p-4 bg-zinc-950 rounded-sm border border-red-500/20">
+                  <h3 className="font-display text-lg font-bold text-red-400 mb-2">Clear All Data</h3>
+                  <p className="font-mono text-sm text-zinc-400 mb-4">
+                    This will permanently delete ALL members and vehicles from the database. 
+                    This action CANNOT be undone. Use this before doing a fresh import from your CSV files.
+                  </p>
+                  
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-sm p-4 mb-4">
+                    <p className="font-mono text-xs text-red-400 mb-2 uppercase font-bold">⚠️ Warning</p>
+                    <ul className="font-mono text-xs text-zinc-400 space-y-1">
+                      <li>• All member records will be deleted</li>
+                      <li>• All vehicle records will be deleted</li>
+                      <li>• User accounts will NOT be deleted (safe)</li>
+                      <li>• Vehicle options will NOT be deleted (safe)</li>
+                    </ul>
+                  </div>
+
+                  <Button
+                    data-testid="clear-all-data-button"
+                    onClick={() => {
+                      const confirmed = window.prompt(
+                        'This will DELETE ALL members and vehicles!\n\n' +
+                        'Type "DELETE_ALL_DATA" to confirm:'
+                      );
+                      
+                      if (confirmed === 'DELETE_ALL_DATA') {
+                        handleClearAllData();
+                      } else if (confirmed !== null) {
+                        toast.error('Confirmation text did not match. Action cancelled.');
+                      }
+                    }}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white font-mono uppercase"
+                  >
+                    Clear All Members & Vehicles
+                  </Button>
+                </div>
+
+                <div className="p-4 bg-zinc-950 rounded-sm">
+                  <h3 className="font-display text-lg font-bold text-white mb-2">Fresh Import Instructions</h3>
+                  <ol className="font-mono text-sm text-zinc-400 space-y-2 list-decimal list-inside">
+                    <li>Click "Clear All Members & Vehicles" above</li>
+                    <li>Type DELETE_ALL_DATA to confirm</li>
+                    <li>Go to Bulk Upload page</li>
+                    <li>Upload your clean CSV file</li>
+                    <li>All records will be imported fresh without duplicates</li>
+                  </ol>
                 </div>
               </div>
             </Card>
