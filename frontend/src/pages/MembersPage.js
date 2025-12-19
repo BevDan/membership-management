@@ -312,8 +312,13 @@ function MembersPage({ user }) {
                       <p className="font-mono text-xs text-zinc-500 uppercase mb-1">Member #{member.member_number}</p>
                       <p className="font-display text-xl font-bold text-white">{member.name}</p>
                       <p className="font-mono text-sm text-zinc-400 mt-2">
-                        {member.address}, {member.suburb} {member.postcode}
+                        {member.address}, {member.suburb} {member.postcode} {member.state}
                       </p>
+                      {member.family_members && member.family_members.length > 0 && (
+                        <p className="font-mono text-xs text-accent mt-2">
+                          Family: {member.family_members.join(', ')}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <p className="font-mono text-xs text-zinc-500 uppercase mb-1">Contact</p>
