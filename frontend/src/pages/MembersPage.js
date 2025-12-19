@@ -607,39 +607,39 @@ function MembersPage({ user }) {
                 <div className="flex items-start justify-between">
                   <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <p className="font-mono text-xs text-zinc-500 uppercase mb-1">Member #{member.member_number}</p>
+                      <p className="text-xs text-zinc-500 uppercase mb-1">Member #{member.member_number}</p>
                       <p className="font-display text-xl font-bold text-white">{member.name}</p>
-                      <p className="font-mono text-sm text-zinc-400 mt-2">
+                      <p className="text-sm text-zinc-400 mt-2">
                         {member.address}, {member.suburb} {member.postcode} {member.state}
                       </p>
                       {member.family_members && member.family_members.length > 0 && (
-                        <p className="font-mono text-xs text-accent mt-2">
+                        <p className="text-xs text-accent mt-2">
                           Family: {member.family_members.join(', ')}
                         </p>
                       )}
                     </div>
                     <div>
-                      <p className="font-mono text-xs text-zinc-500 uppercase mb-1">Contact</p>
-                      {member.phone1 && <p className="font-mono text-sm text-zinc-300">{member.phone1}</p>}
-                      {member.email1 && <p className="font-mono text-sm text-zinc-300">{member.email1}</p>}
+                      <p className="text-xs text-zinc-500 uppercase mb-1">Contact</p>
+                      {member.phone1 && <p className="text-sm text-zinc-300">{member.phone1}</p>}
+                      {member.email1 && <p className="text-sm text-zinc-300">{member.email1}</p>}
                     </div>
                     <div>
-                      <p className="font-mono text-xs text-zinc-500 uppercase mb-1">Status</p>
+                      <p className="text-xs text-zinc-500 uppercase mb-1">Status</p>
                       <div className="flex flex-wrap gap-2">
                         {member.financial && (
-                          <span className="px-2 py-1 bg-green-500/20 text-green-400 font-mono text-xs uppercase rounded-sm">
+                          <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs uppercase rounded-sm">
                             Financial
                           </span>
                         )}
                         {member.life_member && (
-                          <span className="px-2 py-1 bg-primary/20 text-primary font-mono text-xs uppercase rounded-sm">
+                          <span className="px-2 py-1 bg-primary/20 text-primary text-xs uppercase rounded-sm">
                             Life Member
                           </span>
                         )}
-                        <span className="px-2 py-1 bg-zinc-800 text-zinc-300 font-mono text-xs uppercase rounded-sm">
+                        <span className="px-2 py-1 bg-zinc-800 text-zinc-300 text-xs uppercase rounded-sm">
                           {member.membership_type}
                         </span>
-                        <span className="px-2 py-1 bg-accent/20 text-accent font-mono text-xs uppercase rounded-sm">
+                        <span className="px-2 py-1 bg-accent/20 text-accent text-xs uppercase rounded-sm">
                           {member.interest}
                         </span>
                       </div>
