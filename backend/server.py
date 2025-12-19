@@ -873,20 +873,6 @@ def sort_member_number_key(member):
     # Fallback for non-standard formats
     return (float('inf'), str(num_str))
 
-@api_router.get("/members/printable-list")
-async def get_printable_member_list(current_user: User = Depends(get_current_user)):
-    """
-    Get a printable list of members sorted by member number.
-    Returns member_number and name in two columns.
-    Any authenticated user can access this endpoint.
-    """
-    members = await db.members.find({}, {"_id": 0, "member_number": 1, "name": 1}).to_list(10000)
-    
-    # Sort by member number treating alphanumeric properly
-    sorted_members = sorted(members, key=sort_member_number_key)
-    
-    return sorted_members
-
 @api_router.post("/admin/clear-all-data")
 async def clear_all_data(
     request: Request,
