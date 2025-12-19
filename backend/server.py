@@ -50,7 +50,7 @@ class Member(BaseModel):
     address: str
     suburb: str
     postcode: str
-    state: str
+    state: Optional[str] = None
     phone1: Optional[str] = None
     phone2: Optional[str] = None
     email1: Optional[EmailStr] = None
@@ -73,7 +73,7 @@ class MemberCreate(BaseModel):
     address: str
     suburb: str
     postcode: str
-    state: str
+    state: Optional[str] = None
     phone1: Optional[str] = None
     phone2: Optional[str] = None
     email1: Optional[EmailStr] = None
