@@ -341,9 +341,9 @@ async def delete_user(user_id: str, current_user: User = Depends(get_current_use
 @api_router.get("/members", response_model=List[Member])
 async def get_members(
     search: Optional[str] = None,
-    member_number: Optional[int] = None
+    member_number: Optional[int] = None,
+    current_user: User = Depends(get_current_user)
 ):
-    await get_current_user()
     
     query = {}
     if member_number:
