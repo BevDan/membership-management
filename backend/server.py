@@ -247,7 +247,7 @@ async def create_session(session_id: str, response: Response):
                 })
             
             session_token = f"session_{uuid.uuid4().hex}"
-            expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+            expires_at = datetime.now(timezone.utc) + timedelta(days=90)
             
             await db.user_sessions.insert_one({
                 "user_id": user_id,
@@ -263,7 +263,7 @@ async def create_session(session_id: str, response: Response):
                 secure=True,
                 samesite="none",
                 path="/",
-                max_age=7*24*60*60
+                max_age=90*24*60*60
             )
             
             user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0})
