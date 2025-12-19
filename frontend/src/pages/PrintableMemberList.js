@@ -65,7 +65,8 @@ function PrintableMemberList() {
               </h1>
             </div>
             <Button
-              onClick={handlePrint}
+              type="button"
+              onClick={() => window.print()}
               className="bg-orange-500 hover:bg-orange-600 uppercase"
             >
               <Printer className="w-4 h-4 mr-2" />
