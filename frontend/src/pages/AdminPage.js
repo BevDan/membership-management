@@ -146,6 +146,18 @@ function AdminPage({ user }) {
     }
   };
 
+  const handleClearAllData = async () => {
+    try {
+      const response = await axios.delete(`${BACKEND_URL}/api/admin/clear-all-data`, {
+        params: { confirm: 'DELETE_ALL_DATA' },
+        withCredentials: true
+      });
+      toast.success(`${response.data.message}. Deleted ${response.data.deleted_members} members and ${response.data.deleted_vehicles} vehicles.`);
+    } catch (error) {
+      toast.error('Failed to clear data: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   if (user?.role !== 'admin') {
     return null;
   }
