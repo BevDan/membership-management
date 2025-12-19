@@ -738,31 +738,58 @@ async def bulk_upload_vehicles(file: UploadFile = File(...), current_user: User 
     reader = csv.DictReader(io.StringIO(csv_data))
     
     count = 0
-    for row in reader:
-        vehicle_id = f"vehicle_{uuid.uuid4().hex[:12]}"
-        now = datetime.now(timezone.utc)
-        
-        new_vehicle = {
-            "vehicle_id": vehicle_id,
-            "member_id": row.get('member_id', ''),
-            "log_book_number": row.get('log_book_number', ''),
-            "entry_date": datetime.fromisoformat(row['entry_date']).isoformat() if row.get('entry_date') else None,
-            "expiry_date": datetime.fromisoformat(row['expiry_date']).isoformat() if row.get('expiry_date') else None,
-            "make": row.get('make', ''),
-            "body_style": row.get('body_style', ''),
-            "model": row.get('model', ''),
-            "year": int(row.get('year', 0)),
-            "registration": row.get('registration', ''),
-            "status": row.get('status', 'Active'),
-            "reason": row.get('reason', ''),
-            "archived": False,
-            "created_at": now.isoformat(),
-            "updated_at": now.isoformat()
-        }
-        await db.vehicles.insert_one(new_vehicle)
-        count += 1
+    skipped = 0
+    errors = []
     
-    return {"message": f"{count} vehicles uploaded"}
+    for idx, row in enumerate(reader, start=2):
+        try:
+            vehicle_id = f"vehicle_{uuid.uuid4().hex[:12]}"
+            now = datetime.now(timezone.utc)
+            
+            registration = row.get('registration', '').strip()
+            
+            # Check if registration already exists (prevent duplicates)
+            if registration:
+                existing = await db.vehicles.find_one({"registration": registration, "archived": False}, {"_id": 0})
+                if existing:
+                    skipped += 1
+                    print(f"Skipping duplicate registration: {registration}")
+                    continue
+            
+            new_vehicle = {
+                "vehicle_id": vehicle_id,
+                "member_id": row.get('member_id', ''),
+                "log_book_number": row.get('log_book_number', ''),
+                "entry_date": datetime.fromisoformat(row['entry_date']).isoformat() if row.get('entry_date') and row.get('entry_date').strip() else None,
+                "expiry_date": datetime.fromisoformat(row['expiry_date']).isoformat() if row.get('expiry_date') and row.get('expiry_date').strip() else None,
+                "make": row.get('make', ''),
+                "body_style": row.get('body_style', ''),
+                "model": row.get('model', ''),
+                "year": int(row.get('year', 0)) if row.get('year') else 0,
+                "registration": registration,
+                "status": row.get('status', 'Active'),
+                "reason": row.get('reason', ''),
+                "archived": False,
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat()
+            }
+            await db.vehicles.insert_one(new_vehicle)
+            count += 1
+        except Exception as e:
+            errors.append(f"Row {idx}: {str(e)}")
+            continue
+    
+    message_parts = [f"{count} vehicles uploaded"]
+    if skipped > 0:
+        message_parts.append(f"{skipped} duplicates skipped")
+    if errors:
+        message_parts.append(f"{len(errors)} failed")
+        error_summary = "; ".join(errors[:5])
+        if len(errors) > 5:
+            error_summary += f" ... and {len(errors) - 5} more errors"
+        return {"message": ", ".join(message_parts), "errors": error_summary}
+    
+    return {"message": ", ".join(message_parts) if skipped > 0 else f"{count} vehicles uploaded successfully"}
 
 @api_router.post("/members/export")
 async def export_members(filters: ExportFilters, current_user: User = Depends(get_current_user)):
