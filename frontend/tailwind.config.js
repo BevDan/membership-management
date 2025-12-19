@@ -5,7 +5,8 @@ module.exports = {
     extend: {
       fontFamily: {
         'display': ['Unbounded', 'sans-serif'],
-        'mono': ['JetBrains Mono', 'monospace']
+        'mono': ['JetBrains Mono', 'monospace'],
+        'sans': ['Inter', 'sans-serif']
       },
       colors: {
         zinc: {
