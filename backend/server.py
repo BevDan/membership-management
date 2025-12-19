@@ -287,9 +287,8 @@ async def get_users(current_user: User = Depends(get_current_user)):
     return users
 
 @api_router.post("/users", response_model=User)
-async def create_user(user_data: UserCreate):
-    user = await get_current_user()
-    if user.role != "admin":
+async def create_user(user_data: UserCreate, current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     existing = await db.users.find_one({"email": user_data.email})
