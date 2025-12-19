@@ -101,3 +101,96 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Drag club member/vehicle management web application with role-based access control, CRUD operations for members and vehicles, bulk CSV import, and reporting features"
+
+backend:
+  - task: "Member Update API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported 'Failed to save Member' error when updating member details"
+      - working: "NA"
+        agent: "main"
+        comment: "Fixed EmailStr validation issue - changed email1/email2 to Optional[str] in MemberUpdate model. Added better null handling for optional fields."
+
+  - task: "Printable Member List API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "New endpoint GET /api/members/printable-list - returns members sorted by alphanumeric member_number"
+
+frontend:
+  - task: "Member Search with Vehicle Search Options"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/MembersPage.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "Vehicle search UI not visible in previous attempt"
+      - working: "NA"
+        agent: "main"
+        comment: "Fixed JSX syntax error - malformed ternary operator causing build failure. Now properly handles 4 search types: number, name, registration, logbook"
+
+  - task: "Member Edit Dialog"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/MembersPage.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "Failed to save member error on update"
+      - working: "NA"
+        agent: "main"
+        comment: "Frontend sends null for empty optional fields. Backend now accepts this properly."
+
+  - task: "Printable Member List Page"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/PrintableMemberList.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "New page at /member-list - displays members sorted by alphanumeric member_number with print functionality"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Member Update API"
+    - "Member Edit Dialog"
+    - "Printable Member List Page"
+  stuck_tasks:
+    - "Member Update API"
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Fixed critical JSX syntax error that was breaking the frontend build. Fixed backend MemberUpdate model to accept null values for optional email fields. Added new printable member list feature. Need to test: 1) Member update functionality works without errors, 2) Vehicle search options appear for full editors, 3) New printable member list page loads and sorts correctly"
