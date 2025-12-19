@@ -713,13 +713,17 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
             errors.append(f"Row {idx}: {str(e)}")
             continue
     
+    message_parts = [f"{count} members uploaded"]
+    if skipped > 0:
+        message_parts.append(f"{skipped} duplicates skipped")
     if errors:
-        error_summary = "; ".join(errors[:5])  # Show first 5 errors
+        message_parts.append(f"{len(errors)} failed")
+        error_summary = "; ".join(errors[:5])
         if len(errors) > 5:
             error_summary += f" ... and {len(errors) - 5} more errors"
-        return {"message": f"{count} members uploaded, {len(errors)} failed", "errors": error_summary}
+        return {"message": ", ".join(message_parts), "errors": error_summary}
     
-    return {"message": f"{count} members uploaded successfully"}
+    return {"message": ", ".join(message_parts) if skipped > 0 else f"{count} members uploaded successfully"}
 
 @api_router.post("/vehicles/bulk-upload")
 async def bulk_upload_vehicles(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
