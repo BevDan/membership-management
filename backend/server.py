@@ -380,6 +380,103 @@ async def get_suburbs(current_user: User = Depends(get_current_user)):
     suburbs = await db.members.distinct("suburb")
     return sorted([s for s in suburbs if s])
 
+@api_router.get("/stats/dashboard")
+async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
+    """Get comprehensive dashboard statistics"""
+    
+    # Get all members and vehicles
+    members = await db.members.find({}, {"_id": 0}).to_list(10000)
+    vehicles = await db.vehicles.find({"archived": False}, {"_id": 0, "member_id": 1}).to_list(10000)
+    
+    # Create set of member_ids that have vehicles
+    members_with_vehicles = set(v["member_id"] for v in vehicles)
+    
+    # Calculate statistics
+    total_members = len(members)
+    financial_members = sum(1 for m in members if m.get("financial"))
+    
+    # Life member stats
+    life_members_financial = sum(1 for m in members if m.get("life_member") and m.get("financial"))
+    life_members_unfinancial = sum(1 for m in members if m.get("life_member") and not m.get("financial"))
+    
+    # Members with vehicles stats
+    members_with_vehicle_financial = sum(1 for m in members if m.get("member_id") in members_with_vehicles and m.get("financial"))
+    members_with_vehicle_unfinancial = sum(1 for m in members if m.get("member_id") in members_with_vehicles and not m.get("financial"))
+    
+    # Interest breakdown
+    interest_drag_racing = sum(1 for m in members if m.get("interest") == "Drag Racing")
+    interest_car_enthusiast = sum(1 for m in members if m.get("interest") == "Car Enthusiast")
+    interest_both = sum(1 for m in members if m.get("interest") == "Both")
+    
+    # Membership type breakdown
+    type_full = sum(1 for m in members if m.get("membership_type") == "Full")
+    type_family = sum(1 for m in members if m.get("membership_type") == "Family")
+    type_junior = sum(1 for m in members if m.get("membership_type") == "Junior")
+    
+    return {
+        "total_members": total_members,
+        "financial_members": financial_members,
+        "life_members_financial": life_members_financial,
+        "life_members_unfinancial": life_members_unfinancial,
+        "members_with_vehicle_financial": members_with_vehicle_financial,
+        "members_with_vehicle_unfinancial": members_with_vehicle_unfinancial,
+        "total_vehicles": len(vehicles),
+        "interest": {
+            "drag_racing": interest_drag_racing,
+            "car_enthusiast": interest_car_enthusiast,
+            "both": interest_both
+        },
+        "membership_type": {
+            "full": type_full,
+            "family": type_family,
+            "junior": type_junior
+        }
+    }
+
+@api_router.get("/reports/members")
+async def get_member_report(
+    filter_type: str = "all",
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get member report with filters.
+    filter_type: all, unfinancial, with_vehicle, unfinancial_with_vehicle
+    """
+    
+    # Get all members
+    members = await db.members.find({}, {"_id": 0}).to_list(10000)
+    
+    # Get vehicles and create lookup
+    vehicles = await db.vehicles.find({"archived": False}, {"_id": 0, "member_id": 1}).to_list(10000)
+    members_with_vehicles = set(v["member_id"] for v in vehicles)
+    
+    # Apply filters
+    if filter_type == "unfinancial":
+        members = [m for m in members if not m.get("financial")]
+    elif filter_type == "with_vehicle":
+        members = [m for m in members if m.get("member_id") in members_with_vehicles]
+    elif filter_type == "unfinancial_with_vehicle":
+        members = [m for m in members if not m.get("financial") and m.get("member_id") in members_with_vehicles]
+    
+    # Build report data
+    report = []
+    for m in members:
+        has_vehicle = m.get("member_id") in members_with_vehicles
+        report.append({
+            "member_id": m.get("member_id"),
+            "member_number": m.get("member_number"),
+            "name": m.get("name"),
+            "phone": m.get("phone1") or m.get("phone2") or "",
+            "email": m.get("email1") or m.get("email2") or "",
+            "financial": m.get("financial", False),
+            "has_vehicle": has_vehicle
+        })
+    
+    # Sort by member number
+    report = sorted(report, key=lambda x: sort_member_number_key(x))
+    
+    return report
+
 @api_router.get("/members/printable-list")
 async def get_printable_member_list(current_user: User = Depends(get_current_user)):
     """
