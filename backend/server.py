@@ -439,9 +439,9 @@ async def delete_member(member_id: str, current_user: User = Depends(get_current
 async def get_vehicles(
     member_id: Optional[str] = None,
     registration: Optional[str] = None,
-    include_archived: bool = False
+    include_archived: bool = False,
+    current_user: User = Depends(get_current_user)
 ):
-    user = await get_current_user()
     
     query = {}
     if member_id:
