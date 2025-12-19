@@ -97,19 +97,19 @@ function Dashboard({ user }) {
         {/* Main Stats Row - Members grouped together, vehicles at end */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-primary p-4 rounded-sm">
-            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Total Members</p>
+            <p className="text-xs text-zinc-400 uppercase mb-1">Total Members</p>
             <p className="font-display text-3xl font-black text-white">{stats.total_members}</p>
           </Card>
           <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-green-500 p-4 rounded-sm">
-            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Financial</p>
+            <p className="text-xs text-zinc-400 uppercase mb-1">Financial Members</p>
             <p className="font-display text-3xl font-black text-white">{stats.financial_members}</p>
           </Card>
           <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-orange-500 p-4 rounded-sm">
-            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Unfinancial</p>
+            <p className="text-xs text-zinc-400 uppercase mb-1">Unfinancial Members</p>
             <p className="font-display text-3xl font-black text-white">{stats.total_members - stats.financial_members}</p>
           </Card>
           <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-accent p-4 rounded-sm">
-            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Active Vehicles</p>
+            <p className="text-xs text-zinc-400 uppercase mb-1">Active Vehicles</p>
             <p className="font-display text-3xl font-black text-white">{stats.active_vehicles}</p>
           </Card>
         </div>
@@ -117,19 +117,19 @@ function Dashboard({ user }) {
         {/* Life Members & Vehicle Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
-            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Life Members (Financial)</p>
+            <p className="text-xs text-zinc-400 uppercase mb-1">Life Members (Financial)</p>
             <p className="font-display text-2xl font-black text-green-400">{stats.life_members_financial}</p>
           </Card>
           <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
-            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Life Members (Unfinancial)</p>
+            <p className="text-xs text-zinc-400 uppercase mb-1">Life Members (Unfinancial)</p>
             <p className="font-display text-2xl font-black text-orange-400">{stats.life_members_unfinancial}</p>
           </Card>
           <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
-            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">With Vehicle (Financial)</p>
+            <p className="text-xs text-zinc-400 uppercase mb-1">Members with Vehicle(s) (Financial)</p>
             <p className="font-display text-2xl font-black text-green-400">{stats.members_with_vehicle_financial}</p>
           </Card>
           <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
-            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">With Vehicle (Unfinancial)</p>
+            <p className="text-xs text-zinc-400 uppercase mb-1">Members with Vehicle(s) (Unfinancial)</p>
             <p className="font-display text-2xl font-black text-orange-400">{stats.members_with_vehicle_unfinancial}</p>
           </Card>
         </div>
