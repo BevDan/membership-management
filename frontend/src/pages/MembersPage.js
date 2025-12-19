@@ -238,7 +238,17 @@ function MembersPage({ user }) {
       loadMemberNumbers();
       loadMemberNames(); // Refresh member name list
     } catch (error) {
-      toast.error('Failed to save member');
+      console.error('Save member error:', error.response?.data);
+      const errorDetail = error.response?.data?.detail;
+      if (typeof errorDetail === 'string') {
+        toast.error(`Failed to save member: ${errorDetail}`);
+      } else if (Array.isArray(errorDetail)) {
+        // Pydantic validation errors
+        const fields = errorDetail.map(e => e.loc[e.loc.length - 1]).join(', ');
+        toast.error(`Validation error in fields: ${fields}`);
+      } else {
+        toast.error('Failed to save member');
+      }
     }
   };
 
