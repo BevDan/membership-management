@@ -187,8 +187,10 @@ function MembersPage({ user }) {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchTerm) {
+  const handleSearch = async (overrideSearchTerm = null) => {
+    const termToSearch = overrideSearchTerm !== null ? overrideSearchTerm : searchTerm;
+    
+    if (!termToSearch) {
       loadMembers();
       return;
     }
@@ -198,9 +200,9 @@ function MembersPage({ user }) {
         // Find member by vehicle
         const vehicle = vehicleSearchData.find(v => {
           if (searchType === 'registration') {
-            return v.registration && v.registration.toLowerCase() === searchTerm.toLowerCase();
+            return v.registration && v.registration.toLowerCase() === termToSearch.toLowerCase();
           } else {
-            return v.log_book_number && v.log_book_number.toLowerCase() === searchTerm.toLowerCase();
+            return v.log_book_number && v.log_book_number.toLowerCase() === termToSearch.toLowerCase();
           }
         });
         
@@ -216,8 +218,8 @@ function MembersPage({ user }) {
         }
       } else {
         const params = searchType === 'number' 
-          ? { member_number: String(searchTerm).trim() }
-          : { search: searchTerm };
+          ? { member_number: String(termToSearch).trim() }
+          : { search: termToSearch };
         
         const response = await axios.get(`${BACKEND_URL}/api/members`, {
           params,
