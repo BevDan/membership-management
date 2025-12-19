@@ -32,6 +32,10 @@ function PrintableMemberList() {
     window.print();
   };
 
+  // Split members into two columns (left: odd index 0,2,4... right: odd index 1,3,5...)
+  const leftColumn = members.filter((_, idx) => idx % 2 === 0);
+  const rightColumn = members.filter((_, idx) => idx % 2 === 1);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -51,18 +55,18 @@ function PrintableMemberList() {
                 onClick={() => navigate('/dashboard')}
                 variant="outline"
                 size="sm"
-                className="font-mono border-zinc-700 text-white hover:bg-zinc-800"
+                className="border-zinc-700 text-white hover:bg-zinc-800"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
-              <h1 className="font-display text-xl sm:text-2xl font-black text-white">
+              <h1 className="text-xl sm:text-2xl font-black text-white">
                 MEMBER LIST
               </h1>
             </div>
             <Button
               onClick={handlePrint}
-              className="bg-orange-500 hover:bg-orange-600 font-mono uppercase"
+              className="bg-orange-500 hover:bg-orange-600 uppercase"
             >
               <Printer className="w-4 h-4 mr-2" />
               Print
@@ -72,45 +76,87 @@ function PrintableMemberList() {
       </header>
 
       {/* Printable Content */}
-      <main className="max-w-[800px] mx-auto px-6 py-8 print:px-4 print:py-2">
+      <main className="max-w-[1000px] mx-auto px-6 py-8 print:px-4 print:py-2 print:max-w-full">
         {/* Title for print */}
         <div className="hidden print:block text-center mb-6">
-          <h1 className="text-2xl font-bold">Steel City Drags - Member List</h1>
-          <p className="text-sm text-gray-500">Generated: {new Date().toLocaleDateString()}</p>
+          <h1 className="text-2xl font-bold text-black">Steel City Drags - Member List</h1>
+          <p className="text-sm text-gray-600">Generated: {new Date().toLocaleDateString()}</p>
         </div>
 
-        {/* Two-column table */}
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b-2 border-gray-800">
-              <th className="text-left py-2 px-3 font-bold text-sm uppercase bg-gray-100 print:bg-gray-200 w-1/4">
-                Member #
-              </th>
-              <th className="text-left py-2 px-3 font-bold text-sm uppercase bg-gray-100 print:bg-gray-200 w-3/4">
-                Name
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {members.map((member, index) => (
-              <tr 
-                key={member.member_number} 
-                className={`border-b border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
-              >
-                <td className="py-2 px-3 font-mono text-sm font-semibold">
-                  {member.member_number}
-                </td>
-                <td className="py-2 px-3 text-sm">
-                  {member.name}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* Two-column layout */}
+        <div className="grid grid-cols-2 gap-8 print:gap-4">
+          {/* Left Column */}
+          <div>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b-2 border-black">
+                  <th className="text-left py-2 px-2 font-bold text-sm uppercase bg-gray-200 text-black w-1/3">
+                    No.
+                  </th>
+                  <th className="text-left py-2 px-2 font-bold text-sm uppercase bg-gray-200 text-black w-2/3">
+                    Name
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {leftColumn.map((member, index) => (
+                  <tr 
+                    key={member.member_number} 
+                    className={`border-b border-gray-400 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
+                  >
+                    <td className="py-2 px-2 text-sm font-bold text-black">
+                      {member.member_number}
+                    </td>
+                    <td className="py-2 px-2 text-sm text-black">
+                      {member.name}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Right Column */}
+          <div>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b-2 border-black">
+                  <th className="text-left py-2 px-2 font-bold text-sm uppercase bg-gray-200 text-black w-1/3">
+                    No.
+                  </th>
+                  <th className="text-left py-2 px-2 font-bold text-sm uppercase bg-gray-200 text-black w-2/3">
+                    Name
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {rightColumn.map((member, index) => (
+                  <tr 
+                    key={member.member_number} 
+                    className={`border-b border-gray-400 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
+                  >
+                    <td className="py-2 px-2 text-sm font-bold text-black">
+                      {member.member_number}
+                    </td>
+                    <td className="py-2 px-2 text-sm text-black">
+                      {member.name}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         {/* Footer for print */}
-        <div className="hidden print:block mt-8 text-center text-xs text-gray-400">
+        <div className="hidden print:block mt-8 text-center text-sm text-gray-600">
           <p>Total Members: {members.length}</p>
+        </div>
+
+        {/* Screen footer */}
+        <div className="print:hidden mt-8 text-center text-sm text-gray-500">
+          <p>Total Members: {members.length}</p>
+          <p className="mt-2">Click "Print" to generate a printable document</p>
         </div>
       </main>
 
@@ -118,12 +164,13 @@ function PrintableMemberList() {
       <style>{`
         @media print {
           @page {
-            size: A4;
+            size: A4 portrait;
             margin: 1cm;
           }
           body {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            background: white !important;
           }
           .print\\:hidden {
             display: none !important;
@@ -132,10 +179,13 @@ function PrintableMemberList() {
             display: block !important;
           }
           table {
-            font-size: 11pt;
+            font-size: 10pt;
           }
           tr {
             page-break-inside: avoid;
+          }
+          td, th {
+            color: black !important;
           }
         }
       `}</style>
