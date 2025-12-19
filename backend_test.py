@@ -512,6 +512,7 @@ Bulk Test Member,456 Bulk St,Bulk Suburb,67890,0487654321,bulk.test@example.com,
             self.test_vehicle_options()
             self.test_bulk_operations()
             self.test_export_operations()
+            self.test_printable_member_list()
             self.test_member_editor_restrictions()
             
         except Exception as e:
