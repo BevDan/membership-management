@@ -20,7 +20,9 @@ function MembersPage({ user }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('name');
   const [memberNumbers, setMemberNumbers] = useState([]);
+  const [memberNames, setMemberNames] = useState([]);
   const [showMemberNumberDropdown, setShowMemberNumberDropdown] = useState(false);
+  const [showNameDropdown, setShowNameDropdown] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [formData, setFormData] = useState({
@@ -52,6 +54,7 @@ function MembersPage({ user }) {
     loadMembers();
     loadSuburbs();
     loadMemberNumbers();
+    loadMemberNames();
   }, []);
 
   const loadSuburbs = async () => {
@@ -82,6 +85,20 @@ function MembersPage({ user }) {
       setMemberNumbers(numbers);
     } catch (error) {
       console.error('Failed to load member numbers');
+    }
+  };
+
+  const loadMemberNames = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/members`, {
+        withCredentials: true
+      });
+      const names = response.data
+        .map(m => ({ name: m.name, number: m.member_number }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      setMemberNames(names);
+    } catch (error) {
+      console.error('Failed to load member names');
     }
   };
 
@@ -119,6 +136,10 @@ function MembersPage({ user }) {
 
   const filteredMemberNumbers = memberNumbers.filter(num => 
     String(num).toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredMemberNames = memberNames.filter(member => 
+    member.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleCreate = () => {
@@ -200,7 +221,8 @@ function MembersPage({ user }) {
       setShowDialog(false);
       loadMembers();
       loadSuburbs();
-      loadMemberNumbers(); // Refresh member number list
+      loadMemberNumbers();
+      loadMemberNames(); // Refresh member name list
     } catch (error) {
       toast.error('Failed to save member');
     }
@@ -325,14 +347,38 @@ function MembersPage({ user }) {
                   )}
                 </div>
               ) : (
-                <Input
-                  data-testid="search-input"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  placeholder="Enter name or email"
-                  className="bg-zinc-950 border-zinc-800 font-mono"
-                />
+                <div className="relative">
+                  <Input
+                    data-testid="search-input"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setShowNameDropdown(true);
+                    }}
+                    onFocus={() => setShowNameDropdown(true)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                    placeholder="Select or type member name"
+                    className="bg-zinc-950 border-zinc-800 font-mono"
+                  />
+                  {showNameDropdown && filteredMemberNames.length > 0 && searchTerm && (
+                    <div className="absolute z-50 w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-sm max-h-64 overflow-y-auto">
+                      {filteredMemberNames.slice(0, 20).map((member, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            setSearchTerm(member.name);
+                            setShowNameDropdown(false);
+                            setTimeout(() => handleSearch(), 100);
+                          }}
+                          className="px-3 py-2 hover:bg-zinc-800 cursor-pointer font-mono text-sm text-zinc-300"
+                        >
+                          <span className="font-bold">{member.name}</span>
+                          <span className="text-zinc-500 ml-2">#{member.number}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
             <div className="md:col-span-2 flex items-end gap-2">
