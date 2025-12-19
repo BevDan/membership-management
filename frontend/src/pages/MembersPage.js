@@ -913,20 +913,310 @@ function MembersPage({ user }) {
               />
             </div>
           </div>
+
+          {/* Vehicle Sub-Form Section - Only for existing members and full editors/admins */}
+          {editingMember && canAccessVehicles && (
+            <div className="mt-6 pt-6 border-t border-zinc-700">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-white">VEHICLES</h3>
+                <Button
+                  onClick={() => {
+                    setEditingVehicle(null);
+                    setVehicleFormData({
+                      log_book_number: '',
+                      entry_date: '',
+                      expiry_date: '',
+                      make: '',
+                      body_style: '',
+                      model: '',
+                      year: new Date().getFullYear(),
+                      registration: '',
+                      status: 'Active',
+                      reason: ''
+                    });
+                    setShowVehicleDialog(true);
+                  }}
+                  size="sm"
+                  className="bg-secondary hover:bg-secondary/90 text-zinc-900 uppercase"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Vehicle
+                </Button>
+              </div>
+
+              {memberVehicles.length === 0 ? (
+                <p className="text-zinc-500 text-sm text-center py-4">No vehicles registered for this member</p>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {memberVehicles.map((vehicle) => (
+                    <div
+                      key={vehicle.vehicle_id}
+                      className="flex items-center justify-between p-3 bg-zinc-950 border border-zinc-800 rounded-sm"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <span className="text-primary font-bold">{vehicle.registration || 'No Rego'}</span>
+                          <span className="text-zinc-400 text-sm">Log Book: {vehicle.log_book_number}</span>
+                        </div>
+                        <p className="text-white text-sm mt-1">
+                          {vehicle.year} {vehicle.make} {vehicle.model} - {vehicle.body_style}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`px-2 py-0.5 text-xs rounded ${
+                            vehicle.status === 'Active' ? 'bg-green-500/20 text-green-400' : 'bg-zinc-700 text-zinc-400'
+                          }`}>
+                            {vehicle.status}
+                          </span>
+                          {vehicle.reason && (
+                            <span className="text-zinc-500 text-xs">{vehicle.reason}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => {
+                            setEditingVehicle(vehicle);
+                            setVehicleFormData({
+                              log_book_number: vehicle.log_book_number,
+                              entry_date: vehicle.entry_date ? vehicle.entry_date.split('T')[0] : '',
+                              expiry_date: vehicle.expiry_date ? vehicle.expiry_date.split('T')[0] : '',
+                              make: vehicle.make,
+                              body_style: vehicle.body_style,
+                              model: vehicle.model,
+                              year: vehicle.year,
+                              registration: vehicle.registration,
+                              status: vehicle.status,
+                              reason: vehicle.reason || ''
+                            });
+                            setShowVehicleDialog(true);
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="border-zinc-700 hover:border-secondary"
+                        >
+                          <Edit className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          onClick={async () => {
+                            if (window.confirm('Archive this vehicle?')) {
+                              try {
+                                await axios.delete(`${BACKEND_URL}/api/vehicles/${vehicle.vehicle_id}`, {
+                                  withCredentials: true
+                                });
+                                toast.success('Vehicle archived');
+                                loadMemberVehicles(editingMember.member_id);
+                              } catch (error) {
+                                toast.error('Failed to archive vehicle');
+                              }
+                            }
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="border-zinc-700 hover:border-red-500"
+                        >
+                          <Trash className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex justify-end gap-4 mt-6">
             <Button
               onClick={() => setShowDialog(false)}
               variant="outline"
-              className="border-zinc-700 font-mono uppercase"
+              className="border-zinc-700 uppercase"
             >
               Cancel
             </Button>
             <Button
               data-testid="save-member-button"
               onClick={handleSave}
-              className="bg-primary hover:bg-primary/90 font-mono uppercase"
+              className="bg-primary hover:bg-primary/90 uppercase"
             >
               {editingMember ? 'Update' : 'Create'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Vehicle Add/Edit Dialog */}
+      <Dialog open={showVehicleDialog} onOpenChange={setShowVehicleDialog}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl text-white">
+              {editingVehicle ? 'EDIT VEHICLE' : 'ADD VEHICLE'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div>
+              <Label className="text-zinc-400 text-xs">Log Book Number *</Label>
+              <Input
+                value={vehicleFormData.log_book_number}
+                onChange={(e) => setVehicleFormData({ ...vehicleFormData, log_book_number: e.target.value })}
+                className="bg-zinc-950 border-zinc-800"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 text-xs">Registration *</Label>
+              <Input
+                value={vehicleFormData.registration}
+                onChange={(e) => setVehicleFormData({ ...vehicleFormData, registration: e.target.value })}
+                className="bg-zinc-950 border-zinc-800"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 text-xs">Make *</Label>
+              <Input
+                value={vehicleFormData.make}
+                onChange={(e) => setVehicleFormData({ ...vehicleFormData, make: e.target.value })}
+                className="bg-zinc-950 border-zinc-800"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 text-xs">Model *</Label>
+              <Input
+                value={vehicleFormData.model}
+                onChange={(e) => setVehicleFormData({ ...vehicleFormData, model: e.target.value })}
+                className="bg-zinc-950 border-zinc-800"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 text-xs">Body Style *</Label>
+              <Input
+                value={vehicleFormData.body_style}
+                onChange={(e) => setVehicleFormData({ ...vehicleFormData, body_style: e.target.value })}
+                className="bg-zinc-950 border-zinc-800"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 text-xs">Year *</Label>
+              <Input
+                type="number"
+                value={vehicleFormData.year}
+                onChange={(e) => setVehicleFormData({ ...vehicleFormData, year: parseInt(e.target.value) || 0 })}
+                className="bg-zinc-950 border-zinc-800"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 text-xs">Entry Date</Label>
+              <Input
+                type="date"
+                value={vehicleFormData.entry_date}
+                onChange={(e) => setVehicleFormData({ ...vehicleFormData, entry_date: e.target.value })}
+                className="bg-zinc-950 border-zinc-800"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 text-xs">Expiry Date</Label>
+              <Input
+                type="date"
+                value={vehicleFormData.expiry_date}
+                onChange={(e) => setVehicleFormData({ ...vehicleFormData, expiry_date: e.target.value })}
+                className="bg-zinc-950 border-zinc-800"
+              />
+            </div>
+            <div>
+              <Label className="text-zinc-400 text-xs">Status</Label>
+              <Select
+                value={vehicleFormData.status}
+                onValueChange={(value) => setVehicleFormData({ ...vehicleFormData, status: value })}
+              >
+                <SelectTrigger className="bg-zinc-950 border-zinc-800">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-zinc-800">
+                  {vehicleOptions.statuses.length > 0 ? (
+                    vehicleOptions.statuses.map(opt => (
+                      <SelectItem key={opt.option_id} value={opt.value}>{opt.value}</SelectItem>
+                    ))
+                  ) : (
+                    <>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Inactive">Inactive</SelectItem>
+                      <SelectItem value="Cancelled">Cancelled</SelectItem>
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-zinc-400 text-xs">Reason</Label>
+              <Select
+                value={vehicleFormData.reason}
+                onValueChange={(value) => setVehicleFormData({ ...vehicleFormData, reason: value })}
+              >
+                <SelectTrigger className="bg-zinc-950 border-zinc-800">
+                  <SelectValue placeholder="Select reason" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-zinc-800">
+                  {vehicleOptions.reasons.length > 0 ? (
+                    vehicleOptions.reasons.map(opt => (
+                      <SelectItem key={opt.option_id} value={opt.value}>{opt.value}</SelectItem>
+                    ))
+                  ) : (
+                    <>
+                      <SelectItem value="Blank">Blank</SelectItem>
+                      <SelectItem value="Sold Vehicle">Sold Vehicle</SelectItem>
+                      <SelectItem value="No Longer Financial">No Longer Financial</SelectItem>
+                      <SelectItem value="Lost Log Book">Lost Log Book</SelectItem>
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-4 mt-6">
+            <Button
+              onClick={() => setShowVehicleDialog(false)}
+              variant="outline"
+              className="border-zinc-700 uppercase"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  if (!vehicleFormData.log_book_number || !vehicleFormData.registration || !vehicleFormData.make || !vehicleFormData.model || !vehicleFormData.body_style) {
+                    toast.error('Please fill in all required fields');
+                    return;
+                  }
+
+                  const dataToSave = {
+                    ...vehicleFormData,
+                    member_id: editingMember.member_id,
+                    entry_date: vehicleFormData.entry_date || null,
+                    expiry_date: vehicleFormData.expiry_date || null
+                  };
+
+                  if (editingVehicle) {
+                    await axios.put(
+                      `${BACKEND_URL}/api/vehicles/${editingVehicle.vehicle_id}`,
+                      dataToSave,
+                      { withCredentials: true }
+                    );
+                    toast.success('Vehicle updated');
+                  } else {
+                    await axios.post(
+                      `${BACKEND_URL}/api/vehicles`,
+                      dataToSave,
+                      { withCredentials: true }
+                    );
+                    toast.success('Vehicle added');
+                  }
+                  setShowVehicleDialog(false);
+                  loadMemberVehicles(editingMember.member_id);
+                  loadVehicleSearchData();
+                } catch (error) {
+                  toast.error('Failed to save vehicle');
+                }
+              }}
+              className="bg-primary hover:bg-primary/90 uppercase"
+            >
+              {editingVehicle ? 'Update' : 'Add'}
             </Button>
           </div>
         </DialogContent>
