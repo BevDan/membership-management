@@ -401,8 +401,7 @@ async def create_member(member_data: MemberCreate, current_user: User = Depends(
     return await get_member(member_id)
 
 @api_router.put("/members/{member_id}", response_model=Member)
-async def update_member(member_id: str, member_data: MemberUpdate):
-    await get_current_user()
+async def update_member(member_id: str, member_data: MemberUpdate, current_user: User = Depends(get_current_user)):
     
     update_dict = {k: v for k, v in member_data.model_dump().items() if v is not None}
     if 'date_paid' in update_dict and update_dict['date_paid']:
