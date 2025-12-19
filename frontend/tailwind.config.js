@@ -5,7 +5,7 @@ module.exports = {
     extend: {
       fontFamily: {
         'display': ['Unbounded', 'sans-serif'],
-        'mono': ['IBM Plex Mono', 'monospace'],
+        'mono': ['Ubuntu Mono', 'monospace'],
         'sans': ['Inter', 'sans-serif']
       },
       colors: {
