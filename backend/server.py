@@ -828,59 +828,6 @@ async def export_members(filters: ExportFilters, current_user: User = Depends(ge
         headers={"Content-Disposition": "attachment; filename=members_export.csv"}
     )
 
-app.include_router(api_router)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
-
-@api_router.post("/admin/migrate-data")
-async def migrate_data(current_user: User = Depends(get_current_user)):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
-    # Fix member_number from int to string
-    members = await db.members.find({}).to_list(10000)
-    fixed_count = 0
-    
-    for member in members:
-        updates = {}
-        
-        # Fix member_number if it's an integer
-        if isinstance(member.get("member_number"), int):
-            updates["member_number"] = str(member["member_number"])
-        
-        # Add state field if missing
-        if "state" not in member or member.get("state") is None:
-            updates["state"] = ""
-        
-        # Add family_members field if missing
-        if "family_members" not in member:
-            updates["family_members"] = None
-        
-        if updates:
-            await db.members.update_one(
-                {"member_id": member["member_id"]},
-                {"$set": updates}
-            )
-            fixed_count += 1
-    
-    return {"message": f"Migration complete. Fixed {fixed_count} members"}
-
 @api_router.post("/admin/clear-all-data")
 async def clear_all_data(
     confirm: str = Query(...),
@@ -908,6 +855,26 @@ async def clear_all_data(
         "deleted_members": member_count,
         "deleted_vehicles": vehicle_count
     }
+
+app.include_router(api_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    client.close()
 
 @app.on_event("startup")
 async def init_default_options():
