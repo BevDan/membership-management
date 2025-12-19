@@ -218,11 +218,16 @@ function VehiclesPage({ user }) {
                 onClick={() => navigate('/dashboard')}
                 variant="outline"
                 size="sm"
-                className="font-mono border-zinc-700"
+                className="border-zinc-700"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_raceroster/artifacts/brmlixop_Enthusiast%20Logo.jpg" 
+                alt="Car Enthusiasts"
+                className="w-16 h-16 object-contain rounded"
+              />
               <div>
                 <h1 className="font-display text-xl sm:text-2xl font-black text-white">
                   VEHICLE MANAGEMENT
