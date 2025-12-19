@@ -621,7 +621,6 @@ async def delete_vehicle_option(option_id: str, current_user: User = Depends(get
 
 @api_router.post("/members/bulk-upload")
 async def bulk_upload_members(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
-    
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="Only CSV files allowed")
     
@@ -629,51 +628,60 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
     csv_data = content.decode('utf-8')
     reader = csv.DictReader(io.StringIO(csv_data))
     
-    max_member = await db.members.find_one({}, {"_id": 0, "member_number": 1}, sort=[("member_number", -1)])
-    next_auto_number = (max_member["member_number"] + 1) if max_member else 1
+    # Get the highest numeric member number for auto-generation
+    all_members = await db.members.find({}, {"_id": 0, "member_number": 1}).to_list(10000)
+    numeric_numbers = []
+    for m in all_members:
+        try:
+            numeric_numbers.append(int(m.get("member_number", 0)))
+        except (ValueError, TypeError):
+            pass
+    next_auto_number = max(numeric_numbers) + 1 if numeric_numbers else 1
     
     count = 0
-    for row in reader:
-        member_id = f"member_{uuid.uuid4().hex[:12]}"
-        now = datetime.now(timezone.utc)
-        
-        # Use member_number from CSV if provided, otherwise auto-generate
-        if row.get('member_number') and row.get('member_number').strip():
-            member_number = int(row.get('member_number'))
-        else:
-            member_number = next_auto_number
-            next_auto_number += 1
-        
-        # Parse family members if present
-        family_members = None
-        if row.get('family_members'):
-            family_members = [m.strip() for m in row.get('family_members').split(';') if m.strip()]
-        
-        new_member = {
-            "member_id": member_id,
-            "member_number": member_number,
-            "name": row.get('name', ''),
-            "address": row.get('address', ''),
-            "suburb": row.get('suburb', ''),
-            "postcode": row.get('postcode', ''),
-            "state": row.get('state', ''),
-            "phone1": row.get('phone1'),
-            "phone2": row.get('phone2'),
-            "email1": row.get('email1'),
-            "email2": row.get('email2'),
-            "life_member": row.get('life_member', '').lower() in ['true', 'yes', '1'],
-            "financial": row.get('financial', '').lower() in ['true', 'yes', '1'],
-            "membership_type": row.get('membership_type', 'Full'),
-            "family_members": family_members,
-            "interest": row.get('interest', 'Both'),
-            "date_paid": datetime.fromisoformat(row['date_paid']).isoformat() if row.get('date_paid') else None,
-            "expiry_date": datetime.fromisoformat(row['expiry_date']).isoformat() if row.get('expiry_date') else None,
-            "comments": row.get('comments'),
-            "receive_emails": row.get('receive_emails', '').lower() not in ['false', 'no', '0'],
-            "receive_sms": row.get('receive_sms', '').lower() not in ['false', 'no', '0'],
-            "created_at": now.isoformat(),
-            "updated_at": now.isoformat()
-        }
+    errors = []
+    for idx, row in enumerate(reader, start=2):
+        try:
+            member_id = f"member_{uuid.uuid4().hex[:12]}"
+            now = datetime.now(timezone.utc)
+            
+            # Use member_number from CSV if provided (supports alphanumeric), otherwise auto-generate
+            if row.get('member_number') and row.get('member_number').strip():
+                member_number = str(row.get('member_number').strip())
+            else:
+                member_number = str(next_auto_number)
+                next_auto_number += 1
+            
+            # Parse family members if present
+            family_members = None
+            if row.get('family_members'):
+                family_members = [m.strip() for m in row.get('family_members').split(';') if m.strip()]
+            
+            new_member = {
+                "member_id": member_id,
+                "member_number": member_number,
+                "name": row.get('name', ''),
+                "address": row.get('address', ''),
+                "suburb": row.get('suburb', ''),
+                "postcode": row.get('postcode', ''),
+                "state": row.get('state', ''),
+                "phone1": row.get('phone1'),
+                "phone2": row.get('phone2'),
+                "email1": row.get('email1'),
+                "email2": row.get('email2'),
+                "life_member": row.get('life_member', '').lower() in ['true', 'yes', '1'],
+                "financial": row.get('financial', '').lower() in ['true', 'yes', '1'],
+                "membership_type": row.get('membership_type', 'Full'),
+                "family_members": family_members,
+                "interest": row.get('interest', 'Both'),
+                "date_paid": datetime.fromisoformat(row['date_paid']).isoformat() if row.get('date_paid') and row.get('date_paid').strip() else None,
+                "expiry_date": datetime.fromisoformat(row['expiry_date']).isoformat() if row.get('expiry_date') and row.get('expiry_date').strip() else None,
+                "comments": row.get('comments'),
+                "receive_emails": row.get('receive_emails', '').lower() not in ['false', 'no', '0'],
+                "receive_sms": row.get('receive_sms', '').lower() not in ['false', 'no', '0'],
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat()
+            }
             await db.members.insert_one(new_member)
             count += 1
         except Exception as e:
