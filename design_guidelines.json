@@ -1,0 +1,103 @@
+{
+  "identity": {
+    "name": "E1: The Anti-AI Designer",
+    "mission": "Create a 'Control Room' aesthetic for the Steel City Drag Club. Reject standard SaaS white/blue. Embrace asphalt, neon, and mechanical precision.",
+    "principles": [
+      "Fusion: Pit Stop Telemetry x Retro Arcade UI",
+      "Emotion: Adrenaline & Precision",
+      "Content: Data is the hero (Member stats, Vehicle specs)",
+      "Contrast: High-vis neon against deep asphalt"
+    ]
+  },
+  "typography": {
+    "headings": {
+      "family": "'Unbounded', display",
+      "weights": ["700", "900"],
+      "usage": "Page titles, Section headers, Key metrics",
+      "import_url": "https://fonts.googleapis.com/css2?family=Unbounded:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap"
+    },
+    "body": {
+      "family": "'JetBrains Mono', monospace",
+      "weights": ["400", "700"],
+      "usage": "Table data, Form inputs, Labels, Buttons"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": "#09090b",
+      "surface": "#18181b",
+      "surface_highlight": "#27272a",
+      "primary": "#f97316",
+      "primary_foreground": "#ffffff",
+      "secondary": "#eab308",
+      "accent": "#00f0ff",
+      "danger": "#ef4444",
+      "success": "#22c55e",
+      "border": "#3f3f46"
+    },
+    "usage_rules": [
+      "Background must be dark (Zinc-950 or Black).",
+      "Primary color (Orange) used for 'Go' actions and active states.",
+      "Secondary color (Yellow) used for warnings or 'Edit' states.",
+      "Accent color (Cyan) used for 'Vehicle' related highlights.",
+      "Borders should be subtle metal (Zinc-700) unless active."
+    ]
+  },
+  "visual_enhancers": {
+    "texture": "Use the asphalt texture with low opacity (5-10%) overlay on the main background.",
+    "borders": "Use 'chamfered' corners or thick left-borders (border-l-4) to simulate tickets/folders.",
+    "glow": "Use subtle drop-shadows with color (shadow-orange-500/20) for active elements.",
+    "glass": "Use backdrop-blur-md with bg-black/60 for sticky headers and modals."
+  },
+  "layout": {
+    "grid_system": "The 'Control Room' Grid",
+    "dashboard": "Bento grid style. High density. No wasted space.",
+    "spacing": "Tight for data tables (p-2), Generous for containers (p-6, p-8).",
+    "container": "max-w-[1600px] mx-auto (Wide screen for data visibility)."
+  },
+  "components": {
+    "Card": "bg-zinc-900 border-zinc-800 border-l-4 border-l-primary shadow-none rounded-sm",
+    "Button": "font-mono uppercase tracking-wider rounded-sm hover:translate-y-[-2px] transition-transform",
+    "Input": "bg-zinc-950 border-zinc-800 font-mono focus:ring-primary rounded-sm",
+    "Table": "font-mono text-sm border-zinc-800",
+    "Badge": "rounded-none uppercase font-bold tracking-widest"
+  },
+  "images": {
+    "hero_bg": {
+      "url": "https://images.unsplash.com/photo-1709963057730-9a8e3a23120c?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "description": "Blurry neon lights in dark - Use as subtle background overlay for Login or Dashboard Hero",
+      "category": "background"
+    },
+    "vehicle_card_bg": {
+      "url": "https://images.unsplash.com/photo-1757700439163-c78263fae8ae?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "description": "Neon green race car - Use for 'Vehicle Management' section header or card background",
+      "category": "ui_element"
+    },
+    "member_card_bg": {
+      "url": "https://images.unsplash.com/photo-1759832217256-244b5bc54882?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "description": "Chrome engine details - Use for 'Member Details' section header",
+      "category": "ui_element"
+    },
+    "texture_asphalt": {
+      "url": "https://images.unsplash.com/photo-1602475063211-3d98d60e3b1f?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "description": "Asphalt texture - Use as a repeating pattern or overlay on the body background",
+      "category": "texture"
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. INSTALL FONTS: Add the Google Fonts import to 'frontend/src/index.css' immediately.",
+    "2. CONFIGURE TAILWIND: Update 'frontend/tailwind.config.js' to extend the font family (Unbounded, JetBrains Mono) and colors (Zinc palette + Custom Orange).",
+    "3. GLOBAL CSS: Set 'body' background to #09090b and text to #e4e4e7 in 'index.css'. Apply the asphalt texture as a pseudo-element fixed background.",
+    "4. SHADCN OVERRIDES: Customize the default Shadcn components in 'src/components/ui' to match the 'Card' and 'Button' styles defined above. Remove rounded-xl, use rounded-sm or rounded-none.",
+    "5. LAYOUT: Build the Dashboard using the 'Control Room' grid. Use 'sonner' for notifications.",
+    "6. IMAGES: Use the provided Unsplash URLs. Do NOT use placeholders.",
+    "7. LOGO: Since no logo URL is available, create a text-based logo using 'Unbounded' font: 'STEEL CITY [DRAG CLUB]' with the brackets in Orange."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Do not use gradients for backgrounds, use solid dark colors + texture.",
+    "All interactive elements must have 'data-testid'.",
+    "Use 'sonner' for toasts.",
+    "Do not use 'Inter' font. Use 'Unbounded' for headers and 'JetBrains Mono' for UI.",
+    "Ensure high contrast for accessibility (Orange on Black is good, but check grey text)."
+  ]
+}
