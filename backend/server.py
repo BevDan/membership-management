@@ -161,7 +161,7 @@ class ExportFilters(BaseModel):
     receive_sms: Optional[bool] = None
     interest: Optional[Literal['Drag Racing', 'Car Enthusiast', 'Both']] = None
 
-async def get_current_user(session_token: Optional[str] = Cookie(None), authorization: Optional[str] = Header(None)) -> User:
+async def get_current_user(session_token: Optional[str] = Cookie(None), authorization: Optional[str] = Header(None, alias="Authorization")) -> User:
     token = session_token
     if not token and authorization:
         if authorization.startswith('Bearer '):
