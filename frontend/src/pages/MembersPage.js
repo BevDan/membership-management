@@ -668,8 +668,11 @@ function MembersPage({ user }) {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="bg-zinc-900 border-zinc-800 max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl text-white">
-              {editingMember ? 'EDIT MEMBER' : 'NEW MEMBER'}
+            <DialogTitle className="font-display text-2xl text-white flex items-center justify-between">
+              <span>{editingMember ? 'EDIT MEMBER' : 'NEW MEMBER'}</span>
+              {editingMember && (
+                <span className="text-primary text-lg">#{editingMember.member_number}</span>
+              )}
             </DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
