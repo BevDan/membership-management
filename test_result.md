@@ -194,3 +194,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Fixed critical JSX syntax error that was breaking the frontend build. Fixed backend MemberUpdate model to accept null values for optional email fields. Added new printable member list feature. Need to test: 1) Member update functionality works without errors, 2) Vehicle search options appear for full editors, 3) New printable member list page loads and sorts correctly"
+  - agent: "main"
+    message: "Additional changes based on user feedback: 1) Changed font from JetBrains Mono to IBM Plex Mono (clearer zeros without slash), 2) Redesigned printable member list with two-column layout and better contrast, 3) Added vehicle sub-form to member edit dialog - when editing a member, their vehicles now show at the bottom with add/edit/archive functionality. Need to test all these changes after Google OAuth login."
