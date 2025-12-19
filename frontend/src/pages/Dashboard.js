@@ -18,6 +18,7 @@ function Dashboard({ user }) {
     members_with_vehicle_financial: 0,
     members_with_vehicle_unfinancial: 0,
     total_vehicles: 0,
+    active_vehicles: 0,
     interest: { drag_racing: 0, car_enthusiast: 0, both: 0 },
     membership_type: { full: 0, family: 0, junior: 0 }
   });
