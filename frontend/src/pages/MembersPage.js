@@ -94,7 +94,12 @@ function MembersPage({ user }) {
         withCredentials: true
       });
       const names = response.data
-        .map(m => ({ name: m.name, number: m.member_number }))
+        .map(m => ({ 
+          name: m.name, 
+          number: m.member_number,
+          email1: m.email1 || '',
+          email2: m.email2 || ''
+        }))
         .sort((a, b) => a.name.localeCompare(b.name));
       setMemberNames(names);
     } catch (error) {
@@ -138,9 +143,12 @@ function MembersPage({ user }) {
     String(num).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredMemberNames = memberNames.filter(member => 
-    member.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMemberNames = memberNames.filter(member => {
+    const searchLower = searchTerm.toLowerCase();
+    return member.name.toLowerCase().includes(searchLower) ||
+           member.email1.toLowerCase().includes(searchLower) ||
+           member.email2.toLowerCase().includes(searchLower);
+  });
 
   const handleCreate = () => {
     setEditingMember(null);
@@ -370,10 +378,19 @@ function MembersPage({ user }) {
                             setShowNameDropdown(false);
                             setTimeout(() => handleSearch(), 100);
                           }}
-                          className="px-3 py-2 hover:bg-zinc-800 cursor-pointer font-mono text-sm text-zinc-300"
+                          className="px-3 py-2 hover:bg-zinc-800 cursor-pointer text-sm"
                         >
-                          <span className="font-bold">{member.name}</span>
-                          <span className="text-zinc-500 ml-2">#{member.number}</span>
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-white">{member.name}</span>
+                            <span className="text-zinc-500 text-xs">#{member.number}</span>
+                          </div>
+                          {(member.email1 || member.email2) && (
+                            <div className="text-xs text-zinc-400 mt-1">
+                              {member.email1 && <span>{member.email1}</span>}
+                              {member.email1 && member.email2 && <span className="mx-1">•</span>}
+                              {member.email2 && <span>{member.email2}</span>}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
