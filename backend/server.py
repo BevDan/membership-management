@@ -595,8 +595,7 @@ async def delete_vehicle_option(option_id: str, current_user: User = Depends(get
     return {"message": "Option deleted"}
 
 @api_router.post("/members/bulk-upload")
-async def bulk_upload_members(file: UploadFile = File(...)):
-    await get_current_user()
+async def bulk_upload_members(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
     
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="Only CSV files allowed")
