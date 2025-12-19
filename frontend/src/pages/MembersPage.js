@@ -447,7 +447,10 @@ function MembersPage({ user }) {
             </div>
             <div className="md:col-span-7">
               <Label className="text-zinc-400 font-mono text-xs uppercase">
-                {searchType === 'number' ? 'Member Number' : 'Name or Email'}
+                {searchType === 'number' && 'Member Number'}
+                {searchType === 'name' && 'Name or Email'}
+                {searchType === 'registration' && 'Vehicle Registration'}
+                {searchType === 'logbook' && 'Vehicle Log Book Number'}
               </Label>
               {searchType === 'number' ? (
                 <div className="relative">
