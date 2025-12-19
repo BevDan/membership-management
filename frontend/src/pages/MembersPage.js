@@ -470,19 +470,22 @@ function MembersPage({ user }) {
                   />
                   {showMemberNumberDropdown && filteredMemberNumbers.length > 0 && (
                     <div className="absolute z-50 w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-sm max-h-64 overflow-y-auto">
-                      {filteredMemberNumbers.slice(0, 20).map((num, idx) => (
-                        <div
-                          key={idx}
-                          onClick={() => {
-                            setSearchTerm(String(num));
-                            setShowMemberNumberDropdown(false);
-                            setTimeout(() => handleSearch(), 100);
-                          }}
-                          className="px-3 py-2 hover:bg-zinc-800 cursor-pointer font-mono text-sm text-zinc-300"
-                        >
-                          #{num}
-                        </div>
-                      ))}
+                      {filteredMemberNumbers.slice(0, 20).map((num, idx) => {
+                        const numStr = String(num);
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => {
+                              setSearchTerm(numStr);
+                              setShowMemberNumberDropdown(false);
+                              handleSearch(numStr);
+                            }}
+                            className="px-3 py-2 hover:bg-zinc-800 cursor-pointer font-mono text-sm text-zinc-300"
+                          >
+                            #{num}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
