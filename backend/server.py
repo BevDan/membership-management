@@ -650,7 +650,6 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
             "updated_at": now.isoformat()
         }
         await db.members.insert_one(new_member)
-        next_number += 1
         count += 1
     
     return {"message": f"{count} members uploaded"}
