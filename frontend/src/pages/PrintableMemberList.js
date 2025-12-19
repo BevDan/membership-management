@@ -85,16 +85,16 @@ function PrintableMemberList() {
         </div>
 
         {/* Two-column layout */}
-        <div className="grid grid-cols-2 gap-8 print:gap-4">
+        <div className="grid grid-cols-2 gap-4 print:gap-2">
           {/* Left Column */}
           <div>
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b-2 border-black">
-                  <th className="text-left py-2 px-2 font-bold text-sm uppercase bg-gray-200 text-black w-1/3">
+                  <th className="text-left py-1 px-1 font-bold text-xs uppercase bg-gray-200 text-black w-1/4">
                     No.
                   </th>
-                  <th className="text-left py-2 px-2 font-bold text-sm uppercase bg-gray-200 text-black w-2/3">
+                  <th className="text-left py-1 px-1 font-bold text-xs uppercase bg-gray-200 text-black w-3/4">
                     Name
                   </th>
                 </tr>
@@ -103,12 +103,12 @@ function PrintableMemberList() {
                 {leftColumn.map((member, index) => (
                   <tr 
                     key={member.member_number} 
-                    className={`border-b border-gray-400 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
+                    className={`border-b border-gray-300 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                   >
-                    <td className="py-2 px-2 text-sm font-bold text-black">
+                    <td className="py-0.5 px-1 text-xs font-bold text-black">
                       {member.member_number}
                     </td>
-                    <td className="py-2 px-2 text-sm text-black">
+                    <td className="py-0.5 px-1 text-xs text-black">
                       {member.name}
                     </td>
                   </tr>
@@ -122,10 +122,10 @@ function PrintableMemberList() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b-2 border-black">
-                  <th className="text-left py-2 px-2 font-bold text-sm uppercase bg-gray-200 text-black w-1/3">
+                  <th className="text-left py-1 px-1 font-bold text-xs uppercase bg-gray-200 text-black w-1/4">
                     No.
                   </th>
-                  <th className="text-left py-2 px-2 font-bold text-sm uppercase bg-gray-200 text-black w-2/3">
+                  <th className="text-left py-1 px-1 font-bold text-xs uppercase bg-gray-200 text-black w-3/4">
                     Name
                   </th>
                 </tr>
@@ -134,12 +134,12 @@ function PrintableMemberList() {
                 {rightColumn.map((member, index) => (
                   <tr 
                     key={member.member_number} 
-                    className={`border-b border-gray-400 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
+                    className={`border-b border-gray-300 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                   >
-                    <td className="py-2 px-2 text-sm font-bold text-black">
+                    <td className="py-0.5 px-1 text-xs font-bold text-black">
                       {member.member_number}
                     </td>
-                    <td className="py-2 px-2 text-sm text-black">
+                    <td className="py-0.5 px-1 text-xs text-black">
                       {member.name}
                     </td>
                   </tr>
