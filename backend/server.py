@@ -785,6 +785,39 @@ logger = logging.getLogger(__name__)
 async def shutdown_db_client():
     client.close()
 
+@api_router.post("/admin/migrate-data")
+async def migrate_data(current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Fix member_number from int to string
+    members = await db.members.find({}).to_list(10000)
+    fixed_count = 0
+    
+    for member in members:
+        updates = {}
+        
+        # Fix member_number if it's an integer
+        if isinstance(member.get("member_number"), int):
+            updates["member_number"] = str(member["member_number"])
+        
+        # Add state field if missing
+        if "state" not in member or member.get("state") is None:
+            updates["state"] = ""
+        
+        # Add family_members field if missing
+        if "family_members" not in member:
+            updates["family_members"] = None
+        
+        if updates:
+            await db.members.update_one(
+                {"member_id": member["member_id"]},
+                {"$set": updates}
+            )
+            fixed_count += 1
+    
+    return {"message": f"Migration complete. Fixed {fixed_count} members"}
+
 @app.on_event("startup")
 async def init_default_options():
     existing_statuses = await db.vehicle_options.count_documents({"type": "status"})
