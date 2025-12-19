@@ -208,8 +208,14 @@ function MembersPage({ user }) {
     try {
       const dataToSave = {
         ...formData,
-        suburb: suburbInput || formData.suburb
+        suburb: suburbInput.trim() || formData.suburb || ''
       };
+      
+      // Ensure required fields are not empty
+      if (!dataToSave.name || !dataToSave.address || !dataToSave.suburb || !dataToSave.postcode) {
+        toast.error('Please fill in all required fields (Name, Address, Suburb, Postcode)');
+        return;
+      }
       
       if (editingMember) {
         await axios.put(
