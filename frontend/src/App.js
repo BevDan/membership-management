@@ -34,6 +34,7 @@ function AppRouter() {
         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
         <Route path="/archived-vehicles" element={<ProtectedRoute><ArchivedVehiclesPage /></ProtectedRoute>} />
         <Route path="/member-list" element={<ProtectedRoute><PrintableMemberList /></ProtectedRoute>} />
+        <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
       </Routes>
       <Toaster position="top-right" richColors />
     </>
