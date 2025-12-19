@@ -45,7 +45,7 @@ class UserSession(BaseModel):
 
 class Member(BaseModel):
     member_id: str
-    member_number: int
+    member_number: str
     name: str
     address: str
     suburb: str
@@ -395,8 +395,15 @@ async def get_member(member_id: str, current_user: User = Depends(get_current_us
 @api_router.post("/members", response_model=Member)
 async def create_member(member_data: MemberCreate, current_user: User = Depends(get_current_user)):
     
-    max_member = await db.members.find_one({}, {"_id": 0, "member_number": 1}, sort=[("member_number", -1)])
-    next_number = (max_member["member_number"] + 1) if max_member else 1
+    # Get the highest numeric member number for auto-generation
+    all_members = await db.members.find({}, {"_id": 0, "member_number": 1}).to_list(10000)
+    numeric_numbers = []
+    for m in all_members:
+        try:
+            numeric_numbers.append(int(m.get("member_number", 0)))
+        except (ValueError, TypeError):
+            pass
+    next_number = str(max(numeric_numbers) + 1) if numeric_numbers else "1"
     
     member_id = f"member_{uuid.uuid4().hex[:12]}"
     now = datetime.now(timezone.utc)
@@ -667,10 +674,19 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
             "created_at": now.isoformat(),
             "updated_at": now.isoformat()
         }
-        await db.members.insert_one(new_member)
-        count += 1
+            await db.members.insert_one(new_member)
+            count += 1
+        except Exception as e:
+            errors.append(f"Row {idx}: {str(e)}")
+            continue
     
-    return {"message": f"{count} members uploaded"}
+    if errors:
+        error_summary = "; ".join(errors[:5])  # Show first 5 errors
+        if len(errors) > 5:
+            error_summary += f" ... and {len(errors) - 5} more errors"
+        return {"message": f"{count} members uploaded, {len(errors)} failed", "errors": error_summary}
+    
+    return {"message": f"{count} members uploaded successfully"}
 
 @api_router.post("/vehicles/bulk-upload")
 async def bulk_upload_vehicles(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
