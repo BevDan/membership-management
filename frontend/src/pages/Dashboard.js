@@ -58,13 +58,20 @@ function Dashboard({ user }) {
     <div className="min-h-screen bg-zinc-950">
       <header className="bg-zinc-900 border-b-4 border-primary shadow-lg shadow-primary/10 sticky top-0 z-50 backdrop-blur-md">
         <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="font-display text-xl sm:text-2xl font-black text-primary">
-              STEEL CITY <span className="text-white">[DRAG CLUB]</span>
-            </h1>
-            <p className="font-mono text-xs text-zinc-400 uppercase tracking-wider mt-1">
-              Control Room / {user?.role?.replace('_', ' ').toUpperCase()}
-            </p>
+          <div className="flex items-center gap-4">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_dragadmin-portal/artifacts/jywyrakv_SCDC%20Logo.png" 
+              alt="SCDC"
+              className="w-12 h-12 object-contain"
+            />
+            <div>
+              <h1 className="font-display text-xl sm:text-2xl font-black text-primary">
+                STEEL CITY <span className="text-white">[DRAG CLUB]</span>
+              </h1>
+              <p className="font-mono text-xs text-zinc-400 uppercase tracking-wider mt-1">
+                Control Room / {user?.role?.replace('_', ' ').toUpperCase()}
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="hidden sm:block text-right">
