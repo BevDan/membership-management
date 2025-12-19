@@ -75,7 +75,7 @@ function BulkUploadPage({ user }) {
 
   const downloadMemberTemplate = () => {
     const headers = [
-      'name', 'address', 'suburb', 'postcode', 'phone1', 'phone2',
+      'member_number', 'name', 'address', 'suburb', 'postcode', 'phone1', 'phone2',
       'email1', 'email2', 'life_member', 'financial', 'membership_type',
       'interest', 'date_paid', 'expiry_date', 'comments', 'receive_emails', 'receive_sms'
     ];
@@ -175,9 +175,9 @@ function BulkUploadPage({ user }) {
               <p className="font-mono text-xs text-zinc-400 uppercase mb-2">CSV Format Notes:</p>
               <ul className="font-mono text-xs text-zinc-500 space-y-1">
                 <li>• Required: name, address, suburb, postcode</li>
+                <li>• member_number: Include existing numbers or leave blank for auto-generation</li>
                 <li>• Dates: YYYY-MM-DD format</li>
                 <li>• Booleans: true/false or yes/no</li>
-                <li>• Member numbers auto-generated</li>
               </ul>
             </div>
           </Card>
