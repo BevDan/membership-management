@@ -11,6 +11,7 @@ import ExportPage from './pages/ExportPage';
 import AdminPage from './pages/AdminPage';
 import ArchivedVehiclesPage from './pages/ArchivedVehiclesPage';
 import PrintableMemberList from './pages/PrintableMemberList';
+import ReportsPage from './pages/ReportsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from './components/ui/sonner';
 
