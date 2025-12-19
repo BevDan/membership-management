@@ -179,6 +179,15 @@ function Dashboard({ user }) {
             <span>Export Data</span>
           </Button>
 
+          <Button
+            data-testid="navigate-member-list-button"
+            onClick={() => navigate('/member-list')}
+            className="h-32 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-blue-500 text-white font-mono uppercase tracking-wider rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-3"
+          >
+            <FileText className="w-10 h-10" />
+            <span>Member List</span>
+          </Button>
+
           {canAccessVehicles && (
             <Button
               data-testid="navigate-archived-button"
