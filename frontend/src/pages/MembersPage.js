@@ -544,22 +544,25 @@ function MembersPage({ user }) {
                   />
                   {showVehicleDropdown && filteredVehicleSearch.length > 0 && searchTerm && (
                     <div className="absolute z-50 w-full mt-1 bg-zinc-900 border-zinc-800 rounded-sm max-h-64 overflow-y-auto">
-                      {filteredVehicleSearch.slice(0, 20).map((vehicle, idx) => (
-                        <div
-                          key={idx}
-                          onClick={() => {
-                            setSearchTerm(searchType === 'registration' ? vehicle.registration : vehicle.log_book_number);
-                            setShowVehicleDropdown(false);
-                            setTimeout(() => handleSearch(), 100);
-                          }}
-                          className="px-3 py-2 hover:bg-zinc-800 cursor-pointer text-sm"
-                        >
-                          <div className="text-white font-semibold">
-                            {searchType === 'registration' ? vehicle.registration : vehicle.log_book_number}
+                      {filteredVehicleSearch.slice(0, 20).map((vehicle, idx) => {
+                        const valueToSearch = searchType === 'registration' ? vehicle.registration : vehicle.log_book_number;
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => {
+                              setSearchTerm(valueToSearch);
+                              setShowVehicleDropdown(false);
+                              handleSearch(valueToSearch);
+                            }}
+                            className="px-3 py-2 hover:bg-zinc-800 cursor-pointer text-sm"
+                          >
+                            <div className="text-white font-semibold">
+                              {valueToSearch}
+                            </div>
+                            <div className="text-xs text-zinc-400">{vehicle.vehicle}</div>
                           </div>
-                          <div className="text-xs text-zinc-400">{vehicle.vehicle}</div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
