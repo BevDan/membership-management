@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Users, Car, Upload, Download, Settings, Archive, LogOut, FileText } from 'lucide-react';
+import { Users, Car, Upload, Download, Settings, Archive, LogOut, FileText, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -11,10 +11,15 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 function Dashboard({ user }) {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
-    totalMembers: 0,
-    financialMembers: 0,
-    totalVehicles: 0,
-    activeVehicles: 0
+    total_members: 0,
+    financial_members: 0,
+    life_members_financial: 0,
+    life_members_unfinancial: 0,
+    members_with_vehicle_financial: 0,
+    members_with_vehicle_unfinancial: 0,
+    total_vehicles: 0,
+    interest: { drag_racing: 0, car_enthusiast: 0, both: 0 },
+    membership_type: { full: 0, family: 0, junior: 0 }
   });
 
   useEffect(() => {
@@ -23,20 +28,10 @@ function Dashboard({ user }) {
 
   const loadStats = async () => {
     try {
-      const [membersRes, vehiclesRes] = await Promise.all([
-        axios.get(`${BACKEND_URL}/api/members`, { withCredentials: true }),
-        axios.get(`${BACKEND_URL}/api/vehicles`, { withCredentials: true })
-      ]);
-      
-      const members = membersRes.data;
-      const vehicles = vehiclesRes.data;
-      
-      setStats({
-        totalMembers: members.length,
-        financialMembers: members.filter(m => m.financial).length,
-        totalVehicles: vehicles.length,
-        activeVehicles: vehicles.filter(v => v.status === 'Active').length
+      const response = await axios.get(`${BACKEND_URL}/api/stats/dashboard`, { 
+        withCredentials: true 
       });
+      setStats(response.data);
     } catch (error) {
       console.error('Error loading stats:', error);
     }
@@ -98,115 +93,153 @@ function Dashboard({ user }) {
           <p className="font-mono text-zinc-400 uppercase tracking-wider">System Overview</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card data-testid="stat-total-members" className="bg-zinc-900 border-zinc-800 border-l-4 border-l-primary p-6 rounded-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-mono text-xs text-zinc-400 uppercase tracking-widest mb-2">Total Members</p>
-                <p className="font-display text-4xl font-black text-white">{stats.totalMembers}</p>
+        {/* Main Stats Row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-primary p-4 rounded-sm">
+            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Total Members</p>
+            <p className="font-display text-3xl font-black text-white">{stats.total_members}</p>
+          </Card>
+          <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-green-500 p-4 rounded-sm">
+            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Financial</p>
+            <p className="font-display text-3xl font-black text-white">{stats.financial_members}</p>
+          </Card>
+          <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-accent p-4 rounded-sm">
+            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Total Vehicles</p>
+            <p className="font-display text-3xl font-black text-white">{stats.total_vehicles}</p>
+          </Card>
+          <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-secondary p-4 rounded-sm">
+            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Unfinancial</p>
+            <p className="font-display text-3xl font-black text-white">{stats.total_members - stats.financial_members}</p>
+          </Card>
+        </div>
+
+        {/* Life Members & Vehicle Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
+            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Life Members (Financial)</p>
+            <p className="font-display text-2xl font-black text-green-400">{stats.life_members_financial}</p>
+          </Card>
+          <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
+            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">Life Members (Unfinancial)</p>
+            <p className="font-display text-2xl font-black text-orange-400">{stats.life_members_unfinancial}</p>
+          </Card>
+          <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
+            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">With Vehicle (Financial)</p>
+            <p className="font-display text-2xl font-black text-green-400">{stats.members_with_vehicle_financial}</p>
+          </Card>
+          <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
+            <p className="font-mono text-xs text-zinc-400 uppercase mb-1">With Vehicle (Unfinancial)</p>
+            <p className="font-display text-2xl font-black text-orange-400">{stats.members_with_vehicle_unfinancial}</p>
+          </Card>
+        </div>
+
+        {/* Interest & Type Breakdown */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
+            <p className="font-mono text-xs text-zinc-400 uppercase mb-3">Members by Interest</p>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-zinc-300">Drag Racing</span>
+                <span className="font-mono font-bold text-white">{stats.interest.drag_racing}</span>
               </div>
-              <Users className="w-12 h-12 text-primary opacity-50" />
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-zinc-300">Car Enthusiast</span>
+                <span className="font-mono font-bold text-white">{stats.interest.car_enthusiast}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-zinc-300">Both</span>
+                <span className="font-mono font-bold text-white">{stats.interest.both}</span>
+              </div>
             </div>
           </Card>
-
-          <Card data-testid="stat-financial-members" className="bg-zinc-900 border-zinc-800 border-l-4 border-l-secondary p-6 rounded-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-mono text-xs text-zinc-400 uppercase tracking-widest mb-2">Financial</p>
-                <p className="font-display text-4xl font-black text-white">{stats.financialMembers}</p>
+          <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
+            <p className="font-mono text-xs text-zinc-400 uppercase mb-3">Members by Type</p>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-zinc-300">Full</span>
+                <span className="font-mono font-bold text-white">{stats.membership_type.full}</span>
               </div>
-              <Users className="w-12 h-12 text-secondary opacity-50" />
-            </div>
-          </Card>
-
-          <Card data-testid="stat-total-vehicles" className="bg-zinc-900 border-zinc-800 border-l-4 border-l-accent p-6 rounded-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-mono text-xs text-zinc-400 uppercase tracking-widest mb-2">Total Vehicles</p>
-                <p className="font-display text-4xl font-black text-white">{stats.totalVehicles}</p>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-zinc-300">Family</span>
+                <span className="font-mono font-bold text-white">{stats.membership_type.family}</span>
               </div>
-              <Car className="w-12 h-12 text-accent opacity-50" />
-            </div>
-          </Card>
-
-          <Card data-testid="stat-active-vehicles" className="bg-zinc-900 border-zinc-800 border-l-4 border-l-green-500 p-6 rounded-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-mono text-xs text-zinc-400 uppercase tracking-widest mb-2">Active Vehicles</p>
-                <p className="font-display text-4xl font-black text-white">{stats.activeVehicles}</p>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-zinc-300">Junior</span>
+                <span className="font-mono font-bold text-white">{stats.membership_type.junior}</span>
               </div>
-              <Car className="w-12 h-12 text-green-500 opacity-50" />
             </div>
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Navigation Buttons */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           <Button
-            data-testid="navigate-members-button"
             onClick={() => navigate('/members')}
-            className="h-32 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-primary text-white font-mono uppercase tracking-wider rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-3"
+            className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-primary text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
           >
-            <Users className="w-10 h-10" />
-            <span>Manage Members</span>
+            <Users className="w-8 h-8" />
+            <span>Members</span>
           </Button>
 
           {canAccessVehicles && (
             <Button
-              data-testid="navigate-vehicles-button"
               onClick={() => navigate('/vehicles')}
-              className="h-32 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-accent text-white font-mono uppercase tracking-wider rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-3"
+              className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-accent text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
             >
-              <Car className="w-10 h-10" />
-              <span>Manage Vehicles</span>
+              <Car className="w-8 h-8" />
+              <span>Vehicles</span>
             </Button>
           )}
 
           <Button
-            data-testid="navigate-bulk-upload-button"
-            onClick={() => navigate('/bulk-upload')}
-            className="h-32 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-secondary text-white font-mono uppercase tracking-wider rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-3"
+            onClick={() => navigate('/reports')}
+            className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-purple-500 text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
           >
-            <Upload className="w-10 h-10" />
+            <ClipboardList className="w-8 h-8" />
+            <span>Reports</span>
+          </Button>
+
+          <Button
+            onClick={() => navigate('/member-list')}
+            className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-blue-500 text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
+          >
+            <FileText className="w-8 h-8" />
+            <span>Member List</span>
+          </Button>
+
+          <Button
+            onClick={() => navigate('/bulk-upload')}
+            className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-secondary text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
+          >
+            <Upload className="w-8 h-8" />
             <span>Bulk Upload</span>
           </Button>
 
           <Button
-            data-testid="navigate-export-button"
             onClick={() => navigate('/export')}
-            className="h-32 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-primary text-white font-mono uppercase tracking-wider rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-3"
+            className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-primary text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
           >
-            <Download className="w-10 h-10" />
-            <span>Export Data</span>
-          </Button>
-
-          <Button
-            data-testid="navigate-member-list-button"
-            onClick={() => navigate('/member-list')}
-            className="h-32 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-blue-500 text-white font-mono uppercase tracking-wider rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-3"
-          >
-            <FileText className="w-10 h-10" />
-            <span>Member List</span>
+            <Download className="w-8 h-8" />
+            <span>Export</span>
           </Button>
 
           {canAccessVehicles && (
             <Button
-              data-testid="navigate-archived-button"
               onClick={() => navigate('/archived-vehicles')}
-              className="h-32 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-zinc-500 text-white font-mono uppercase tracking-wider rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-3"
+              className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-zinc-500 text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
             >
-              <Archive className="w-10 h-10" />
-              <span>Archived Vehicles</span>
+              <Archive className="w-8 h-8" />
+              <span>Archived</span>
             </Button>
           )}
 
           {isAdmin && (
             <Button
-              data-testid="navigate-admin-button"
               onClick={() => navigate('/admin')}
-              className="h-32 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-red-500 text-white font-mono uppercase tracking-wider rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-3"
+              className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-red-500 text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
             >
-              <Settings className="w-10 h-10" />
-              <span>Admin Panel</span>
+              <Settings className="w-8 h-8" />
+              <span>Admin</span>
             </Button>
           )}
         </div>
