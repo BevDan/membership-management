@@ -484,7 +484,7 @@ function MembersPage({ user }) {
                     </div>
                   )}
                 </div>
-              ) : (
+              ) : searchType === 'name' ? (
                 <div className="relative">
                   <Input
                     data-testid="search-input"
@@ -561,7 +561,8 @@ function MembersPage({ user }) {
                     </div>
                   )}
                 </div>
-              ) : (
+              ) : null}
+            </div>
             <div className="md:col-span-2 flex items-end gap-2">
               <Button
                 data-testid="search-button"
