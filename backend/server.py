@@ -874,6 +874,28 @@ async def migrate_data(current_user: User = Depends(get_current_user)):
     
     return {"message": f"Migration complete. Fixed {fixed_count} members"}
 
+@api_router.delete("/admin/clear-all-data")
+async def clear_all_data(confirm: str, current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    if confirm != "DELETE_ALL_DATA":
+        raise HTTPException(status_code=400, detail="Confirmation text must be 'DELETE_ALL_DATA'")
+    
+    # Count before deletion
+    member_count = await db.members.count_documents({})
+    vehicle_count = await db.vehicles.count_documents({})
+    
+    # Delete all members and vehicles
+    await db.members.delete_many({})
+    await db.vehicles.delete_many({})
+    
+    return {
+        "message": "All data cleared successfully",
+        "deleted_members": member_count,
+        "deleted_vehicles": vehicle_count
+    }
+
 @app.on_event("startup")
 async def init_default_options():
     existing_statuses = await db.vehicle_options.count_documents({"type": "status"})
