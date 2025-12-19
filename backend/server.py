@@ -882,8 +882,12 @@ async def migrate_data(current_user: User = Depends(get_current_user)):
     return {"message": f"Migration complete. Fixed {fixed_count} members"}
 
 @api_router.post("/admin/clear-all-data")
-async def clear_all_data(confirm: str = Query(...)):
-    current_user = await get_current_user()
+async def clear_all_data(
+    confirm: str = Query(...),
+    session_token: Optional[str] = Cookie(None),
+    authorization: Optional[str] = Header(None)
+):
+    current_user = await get_current_user(session_token, authorization)
     
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
