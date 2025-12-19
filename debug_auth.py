@@ -37,7 +37,7 @@ else:
     exit(1)
 
 # Test API call
-url = "https://dragadmin-portal.preview.emergentagent.com/api/auth/me"
+url = "https://raceroster.preview.emergentagent.com/api/auth/me"
 headers = {
     'Authorization': f'Bearer {token}',
     'Content-Type': 'application/json'
