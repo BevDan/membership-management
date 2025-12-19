@@ -208,13 +208,15 @@ function Dashboard({ user }) {
             <span>Member List</span>
           </Button>
 
-          <Button
-            onClick={() => navigate('/bulk-upload')}
-            className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-secondary text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
-          >
-            <Upload className="w-8 h-8" />
-            <span>Bulk Upload</span>
-          </Button>
+          {isAdmin && (
+            <Button
+              onClick={() => navigate('/bulk-upload')}
+              className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-secondary text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
+            >
+              <Upload className="w-8 h-8" />
+              <span>Bulk Upload</span>
+            </Button>
+          )}
 
           <Button
             onClick={() => navigate('/export')}
