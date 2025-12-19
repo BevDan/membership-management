@@ -363,8 +363,7 @@ async def get_members(
     return members
 
 @api_router.get("/members/{member_id}", response_model=Member)
-async def get_member(member_id: str):
-    await get_current_user()
+async def get_member(member_id: str, current_user: User = Depends(get_current_user)):
     
     member = await db.members.find_one({"member_id": member_id}, {"_id": 0})
     if not member:
