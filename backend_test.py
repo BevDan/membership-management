@@ -224,14 +224,27 @@ class DragClubAPITester:
             self.log_test("Search member by name", success,
                          f"Found {len(response.json()) if response and response.status_code == 200 else 0} members")
             
-            # Update member
-            update_data = {"financial": False, "comments": "Updated by test"}
+            # Test member update with null/empty email fields (key fix to test)
+            update_data = {
+                "financial": False, 
+                "comments": "Updated by test",
+                "email1": None,  # Test null email handling
+                "email2": "",    # Test empty string handling
+                "phone2": None   # Test null phone handling
+            }
             response = self.make_request('PUT', f'members/{member_id}', token, update_data)
             success = response and response.status_code == 200
-            self.log_test("Update member", success,
+            self.log_test("Update member with null/empty fields", success,
                          f"Status: {response.status_code if response else 'No response'}")
             
-            # Get specific member
+            if not success and response:
+                try:
+                    error_detail = response.json()
+                    print(f"    Error details: {error_detail}")
+                except:
+                    print(f"    Response text: {response.text}")
+            
+            # Get specific member to verify update
             response = self.make_request('GET', f'members/{member_id}', token)
             success = response and response.status_code == 200
             if success:
