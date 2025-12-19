@@ -53,8 +53,8 @@ class Member(BaseModel):
     state: Optional[str] = None
     phone1: Optional[str] = None
     phone2: Optional[str] = None
-    email1: Optional[EmailStr] = None
-    email2: Optional[EmailStr] = None
+    email1: Optional[str] = None
+    email2: Optional[str] = None
     life_member: bool = False
     financial: bool = False
     membership_type: Literal['Full', 'Family', 'Junior']
