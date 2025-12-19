@@ -612,16 +612,23 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
     reader = csv.DictReader(io.StringIO(csv_data))
     
     max_member = await db.members.find_one({}, {"_id": 0, "member_number": 1}, sort=[("member_number", -1)])
-    next_number = (max_member["member_number"] + 1) if max_member else 1
+    next_auto_number = (max_member["member_number"] + 1) if max_member else 1
     
     count = 0
     for row in reader:
         member_id = f"member_{uuid.uuid4().hex[:12]}"
         now = datetime.now(timezone.utc)
         
+        # Use member_number from CSV if provided, otherwise auto-generate
+        if row.get('member_number') and row.get('member_number').strip():
+            member_number = int(row.get('member_number'))
+        else:
+            member_number = next_auto_number
+            next_auto_number += 1
+        
         new_member = {
             "member_id": member_id,
-            "member_number": next_number,
+            "member_number": member_number,
             "name": row.get('name', ''),
             "address": row.get('address', ''),
             "suburb": row.get('suburb', ''),
