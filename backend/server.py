@@ -375,6 +375,11 @@ async def get_members(
                 m[field] = datetime.fromisoformat(m[field])
     return members
 
+@api_router.get("/members/suburbs/list")
+async def get_suburbs(current_user: User = Depends(get_current_user)):
+    suburbs = await db.members.distinct("suburb")
+    return sorted([s for s in suburbs if s])
+
 @api_router.get("/members/{member_id}", response_model=Member)
 async def get_member(member_id: str, current_user: User = Depends(get_current_user)):
     
