@@ -710,7 +710,14 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
             await db.members.insert_one(new_member)
             count += 1
         except Exception as e:
-            errors.append(f"Row {idx}: {str(e)}")
+            member_name = row.get('name', 'Unknown')
+            member_num = row.get('member_number', 'N/A')
+            error_msg = str(e)
+            # Simplify error message
+            if 'duplicate key' in error_msg.lower():
+                errors.append(f"Row {idx} ({member_num} - {member_name}): Duplicate member_number")
+            else:
+                errors.append(f"Row {idx} ({member_num} - {member_name}): {error_msg[:100]}")
             continue
     
     message_parts = [f"{count} members uploaded"]
