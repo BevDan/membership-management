@@ -1,0 +1,7 @@
+member_number,name,address,suburb,postcode,state,phone1,phone2,email1,email2,life_member,financial,membership_type,family_members,interest,date_paid,expiry_date,comments,receive_emails,receive_sms
+M-101,John Smith,123 Main Street,Adelaide,5000,SA,0412345678,0487654321,john.smith@example.com,jsmith@gmail.com,false,true,Full,,Drag Racing,2024-01-15,2025-01-15,Member since 2010,true,true
+M-102,Sarah Johnson,456 Park Avenue,Salisbury,5108,SA,0423456789,,sarah.j@example.com,,true,true,Full,,Both,2024-02-20,2025-02-20,Life member,true,true
+2024-001,Mike Williams,789 King Road,Elizabeth,5112,SA,0434567890,0498765432,mike.w@example.com,,false,true,Family,"Karen Williams;Tom Williams;Lisa Williams",Drag Racing,2024-03-10,2025-03-10,Family of 4,true,false
+FAM-50,Emma Brown,321 Queen Street,Gawler,5118,SA,0445678901,,emma.brown@example.com,emmab@hotmail.com,false,false,Full,,Car Enthusiast,2023-12-05,2024-12-05,Needs renewal,false,true
+JNR-25,David Taylor,654 George Boulevard,Munno Para,5115,SA,0456789012,,david.t@example.com,,false,true,Junior,,Both,2024-04-01,2025-04-01,Junior member,true,true
+,Auto Number Example,999 Test Street,Adelaide,5000,SA,0467890123,,newmember@example.com,,false,false,Full,,Drag Racing,,,Leave member_number blank for auto-generation,true,true
