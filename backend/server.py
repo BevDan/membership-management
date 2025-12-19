@@ -424,9 +424,8 @@ async def update_member(member_id: str, member_data: MemberUpdate, current_user:
     return await get_member(member_id)
 
 @api_router.delete("/members/{member_id}")
-async def delete_member(member_id: str):
-    user = await get_current_user()
-    if user.role != "admin":
+async def delete_member(member_id: str, current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     await db.vehicles.delete_many({"member_id": member_id})
