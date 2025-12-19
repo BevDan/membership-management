@@ -276,9 +276,8 @@ async def logout(response: Response, session_token: Optional[str] = Cookie(None)
     return {"message": "Logged out"}
 
 @api_router.get("/users", response_model=List[User])
-async def get_users(current_user: User = None):
-    user = await get_current_user()
-    if user.role != "admin":
+async def get_users(current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     users = await db.users.find({}, {"_id": 0}).to_list(1000)
