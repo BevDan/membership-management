@@ -380,6 +380,20 @@ async def get_suburbs(current_user: User = Depends(get_current_user)):
     suburbs = await db.members.distinct("suburb")
     return sorted([s for s in suburbs if s])
 
+@api_router.get("/members/printable-list")
+async def get_printable_member_list(current_user: User = Depends(get_current_user)):
+    """
+    Get a printable list of members sorted by member number.
+    Returns member_number and name in two columns.
+    Any authenticated user can access this endpoint.
+    """
+    members = await db.members.find({}, {"_id": 0, "member_number": 1, "name": 1}).to_list(10000)
+    
+    # Sort by member number treating alphanumeric properly
+    sorted_members = sorted(members, key=sort_member_number_key)
+    
+    return sorted_members
+
 @api_router.get("/members/{member_id}", response_model=Member)
 async def get_member(member_id: str, current_user: User = Depends(get_current_user)):
     
