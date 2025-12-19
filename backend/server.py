@@ -167,10 +167,14 @@ async def get_current_user(session_token: Optional[str] = Cookie(None), authoriz
         if authorization.startswith('Bearer '):
             token = authorization[7:]
     
+    logging.info(f"Auth attempt - Cookie token: {session_token}, Auth header: {authorization}, Final token: {token}")
+    
     if not token:
+        logging.warning("No token provided")
         raise HTTPException(status_code=401, detail="Not authenticated")
     
     session_doc = await db.user_sessions.find_one({"session_token": token}, {"_id": 0})
+    logging.info(f"Session lookup for token {token}: {'Found' if session_doc else 'Not found'}")
     if not session_doc:
         raise HTTPException(status_code=401, detail="Invalid session")
     
