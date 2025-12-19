@@ -79,9 +79,9 @@ function PrintableMemberList() {
       {/* Printable Content */}
       <main className="max-w-[1000px] mx-auto px-6 py-8 print:px-4 print:py-2 print:max-w-full">
         {/* Title for print */}
-        <div className="hidden print:block text-center mb-6">
-          <h1 className="text-2xl font-bold text-black">Steel City Drags - Member List</h1>
-          <p className="text-sm text-gray-600">Generated: {new Date().toLocaleDateString()}</p>
+        <div className="hidden print:block text-center mb-2">
+          <h1 className="text-lg font-bold text-black">Steel City Drags - Member List</h1>
+          <p className="text-xs text-gray-600">Generated: {new Date().toLocaleDateString()} | Total: {members.length} members</p>
         </div>
 
         {/* Two-column layout */}
