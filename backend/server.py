@@ -553,8 +553,7 @@ async def delete_vehicle_permanent(vehicle_id: str, current_user: User = Depends
     return {"message": "Vehicle permanently deleted"}
 
 @api_router.get("/vehicle-options", response_model=List[VehicleOption])
-async def get_vehicle_options(type: Optional[str] = None):
-    await get_current_user()
+async def get_vehicle_options(type: Optional[str] = None, current_user: User = Depends(get_current_user)):
     
     query = {}
     if type:
