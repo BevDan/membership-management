@@ -585,9 +585,8 @@ async def create_vehicle_option(option_data: VehicleOptionCreate, current_user: 
     return VehicleOption(**option)
 
 @api_router.delete("/vehicle-options/{option_id}")
-async def delete_vehicle_option(option_id: str):
-    user = await get_current_user()
-    if user.role != "admin":
+async def delete_vehicle_option(option_id: str, current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     result = await db.vehicle_options.delete_one({"option_id": option_id})
