@@ -466,12 +466,29 @@ async def get_member_report(
     report = []
     for m in members:
         has_vehicle = m.get("member_id") in members_with_vehicles
+        
+        # Concatenate phones with ; separator if both exist
+        phone1 = m.get("phone1") or ""
+        phone2 = m.get("phone2") or ""
+        if phone1 and phone2:
+            phone = f"{phone1}; {phone2}"
+        else:
+            phone = phone1 or phone2
+        
+        # Concatenate emails with ; separator if both exist
+        email1 = m.get("email1") or ""
+        email2 = m.get("email2") or ""
+        if email1 and email2:
+            email = f"{email1}; {email2}"
+        else:
+            email = email1 or email2
+        
         report.append({
             "member_id": m.get("member_id"),
             "member_number": m.get("member_number"),
             "name": m.get("name"),
-            "phone": m.get("phone1") or m.get("phone2") or "",
-            "email": m.get("email1") or m.get("email2") or "",
+            "phone": phone,
+            "email": email,
             "financial": m.get("financial", False),
             "has_vehicle": has_vehicle
         })
