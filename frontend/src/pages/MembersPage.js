@@ -19,6 +19,8 @@ function MembersPage({ user }) {
   const [members, setMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('name');
+  const [memberNumbers, setMemberNumbers] = useState([]);
+  const [showMemberNumberDropdown, setShowMemberNumberDropdown] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [formData, setFormData] = useState({
@@ -49,6 +51,7 @@ function MembersPage({ user }) {
   useEffect(() => {
     loadMembers();
     loadSuburbs();
+    loadMemberNumbers();
   }, []);
 
   const loadSuburbs = async () => {
@@ -59,6 +62,26 @@ function MembersPage({ user }) {
       setSuburbs(response.data);
     } catch (error) {
       console.error('Failed to load suburbs');
+    }
+  };
+
+  const loadMemberNumbers = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/members`, {
+        withCredentials: true
+      });
+      const numbers = response.data.map(m => m.member_number).sort((a, b) => {
+        // Try numeric sort first, fall back to string sort
+        const aNum = parseInt(a);
+        const bNum = parseInt(b);
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+          return aNum - bNum;
+        }
+        return String(a).localeCompare(String(b));
+      });
+      setMemberNumbers(numbers);
+    } catch (error) {
+      console.error('Failed to load member numbers');
     }
   };
 
@@ -81,7 +104,7 @@ function MembersPage({ user }) {
 
     try {
       const params = searchType === 'number' 
-        ? { member_number: searchTerm }
+        ? { member_number: String(searchTerm).trim() }
         : { search: searchTerm };
       
       const response = await axios.get(`${BACKEND_URL}/api/members`, {
@@ -93,6 +116,10 @@ function MembersPage({ user }) {
       toast.error('Search failed');
     }
   };
+
+  const filteredMemberNumbers = memberNumbers.filter(num => 
+    String(num).toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleCreate = () => {
     setEditingMember(null);
@@ -172,7 +199,8 @@ function MembersPage({ user }) {
       }
       setShowDialog(false);
       loadMembers();
-      loadSuburbs(); // Refresh suburb list
+      loadSuburbs();
+      loadMemberNumbers(); // Refresh member number list
     } catch (error) {
       toast.error('Failed to save member');
     }
@@ -264,14 +292,48 @@ function MembersPage({ user }) {
               <Label className="text-zinc-400 font-mono text-xs uppercase">
                 {searchType === 'number' ? 'Member Number' : 'Name or Email'}
               </Label>
-              <Input
-                data-testid="search-input"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder={searchType === 'number' ? 'Enter member number' : 'Enter name or email'}
-                className="bg-zinc-950 border-zinc-800 font-mono"
-              />
+              {searchType === 'number' ? (
+                <div className="relative">
+                  <Input
+                    data-testid="search-input"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setShowMemberNumberDropdown(true);
+                    }}
+                    onFocus={() => setShowMemberNumberDropdown(true)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                    placeholder="Select or type member number"
+                    className="bg-zinc-950 border-zinc-800 font-mono"
+                  />
+                  {showMemberNumberDropdown && filteredMemberNumbers.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-sm max-h-64 overflow-y-auto">
+                      {filteredMemberNumbers.slice(0, 20).map((num, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            setSearchTerm(String(num));
+                            setShowMemberNumberDropdown(false);
+                            setTimeout(() => handleSearch(), 100);
+                          }}
+                          className="px-3 py-2 hover:bg-zinc-800 cursor-pointer font-mono text-sm text-zinc-300"
+                        >
+                          #{num}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Input
+                  data-testid="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  placeholder="Enter name or email"
+                  className="bg-zinc-950 border-zinc-800 font-mono"
+                />
+              )}
             </div>
             <div className="md:col-span-2 flex items-end gap-2">
               <Button
