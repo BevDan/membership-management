@@ -794,8 +794,8 @@ function MembersPage({ user }) {
                 className="bg-zinc-950 border-zinc-800"
               />
             </div>
-            <div className="md:col-span-2">
-              <Label className="text-zinc-400 font-mono text-xs">Membership Type</Label>
+            <div>
+              <Label className="text-zinc-400 text-xs">Membership Type</Label>
               <Select
                 value={formData.membership_type}
                 onValueChange={(value) => setFormData({ ...formData, membership_type: value })}
@@ -813,7 +813,7 @@ function MembersPage({ user }) {
             
             {formData.membership_type === 'Family' && (
               <div className="md:col-span-2">
-                <Label className="text-zinc-400 font-mono text-xs mb-2 block">Family Members</Label>
+                <Label className="text-zinc-400 text-xs mb-2 block">Family Members</Label>
                 <div className="space-y-2 p-4 bg-zinc-950 rounded-sm">
                   {(formData.family_members || []).map((member, index) => (
                     <div key={index} className="flex gap-2">
@@ -838,35 +838,118 @@ function MembersPage({ user }) {
                     type="button"
                     onClick={addFamilyMember}
                     variant="outline"
-                    className="w-full border-zinc-700 hover:border-primary font-mono uppercase"
+                    className="w-full border-zinc-700 hover:border-primary uppercase"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Family Member
                   </Button>
-                  <p className="text-xs text-zinc-500 font-mono mt-2">
+                  <p className="text-xs text-zinc-500 mt-2">
                     Add names of other family members included in this membership
                   </p>
                 </div>
               </div>
             )}
-            <div>
-              <Label className="text-zinc-400 font-mono text-xs">Interest</Label>
-              <Select
-                value={formData.interest}
-                onValueChange={(value) => setFormData({ ...formData, interest: value })}
-              >
-                <SelectTrigger className="bg-zinc-950 border-zinc-800">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-zinc-800">
-                  <SelectItem value="Drag Racing">Drag Racing</SelectItem>
-                  <SelectItem value="Car Enthusiast">Car Enthusiast</SelectItem>
-                  <SelectItem value="Both">Both</SelectItem>
-                </SelectContent>
-              </Select>
+
+            {/* Membership Duration Buttons and Interest */}
+            <div className="md:col-span-2">
+              <div className="flex flex-wrap items-end gap-4">
+                <div>
+                  <Label className="text-zinc-400 text-xs mb-2 block">Set Membership Duration</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        const today = new Date();
+                        const nextYear = today.getFullYear() + 1;
+                        const expiryDate = `${nextYear}-05-31`;
+                        setFormData({ 
+                          ...formData, 
+                          date_paid: today.toISOString().split('T')[0],
+                          expiry_date: expiryDate
+                        });
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="border-green-600 hover:bg-green-600/20 text-green-400"
+                    >
+                      1 Year
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        const today = new Date();
+                        let datePaid = formData.date_paid ? new Date(formData.date_paid) : null;
+                        const sixMonthsAgo = new Date();
+                        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                        
+                        if (!datePaid || datePaid < sixMonthsAgo) {
+                          datePaid = today;
+                        }
+                        
+                        const expiryYear = datePaid.getFullYear() + 2;
+                        const expiryDate = `${expiryYear}-05-31`;
+                        setFormData({ 
+                          ...formData, 
+                          date_paid: datePaid.toISOString().split('T')[0],
+                          expiry_date: expiryDate
+                        });
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="border-blue-600 hover:bg-blue-600/20 text-blue-400"
+                    >
+                      2 Years
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        const today = new Date();
+                        let datePaid = formData.date_paid ? new Date(formData.date_paid) : null;
+                        const sixMonthsAgo = new Date();
+                        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                        
+                        if (!datePaid || datePaid < sixMonthsAgo) {
+                          datePaid = today;
+                        }
+                        
+                        const expiryYear = datePaid.getFullYear() + 3;
+                        const expiryDate = `${expiryYear}-05-31`;
+                        setFormData({ 
+                          ...formData, 
+                          date_paid: datePaid.toISOString().split('T')[0],
+                          expiry_date: expiryDate
+                        });
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="border-purple-600 hover:bg-purple-600/20 text-purple-400"
+                    >
+                      3 Years
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-[150px]">
+                  <Label className="text-zinc-400 text-xs">Interest</Label>
+                  <Select
+                    value={formData.interest}
+                    onValueChange={(value) => setFormData({ ...formData, interest: value })}
+                  >
+                    <SelectTrigger className="bg-zinc-950 border-zinc-800">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-800">
+                      <SelectItem value="Drag Racing">Drag Racing</SelectItem>
+                      <SelectItem value="Car Enthusiast">Car Enthusiast</SelectItem>
+                      <SelectItem value="Both">Both</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
+
+            {/* Date Paid and Expiry Date on same row */}
             <div>
-              <Label className="text-zinc-400 font-mono text-xs">Date Paid</Label>
+              <Label className="text-zinc-400 text-xs">Date Paid</Label>
               <Input
                 type="date"
                 value={formData.date_paid}
@@ -875,7 +958,7 @@ function MembersPage({ user }) {
               />
             </div>
             <div>
-              <Label className="text-zinc-400 font-mono text-xs">Expiry Date</Label>
+              <Label className="text-zinc-400 text-xs">Expiry Date</Label>
               <Input
                 type="date"
                 value={formData.expiry_date}
