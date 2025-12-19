@@ -26,6 +26,7 @@ function MembersPage({ user }) {
     address: '',
     suburb: '',
     postcode: '',
+    state: '',
     phone1: '',
     phone2: '',
     email1: '',
@@ -33,6 +34,7 @@ function MembersPage({ user }) {
     life_member: false,
     financial: false,
     membership_type: 'Full',
+    family_members: [],
     interest: 'Both',
     date_paid: '',
     expiry_date: '',
@@ -40,10 +42,25 @@ function MembersPage({ user }) {
     receive_emails: true,
     receive_sms: true
   });
+  const [suburbs, setSuburbs] = useState([]);
+  const [suburbInput, setSuburbInput] = useState('');
+  const [showSuburbDropdown, setShowSuburbDropdown] = useState(false);
 
   useEffect(() => {
     loadMembers();
+    loadSuburbs();
   }, []);
+
+  const loadSuburbs = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/members/suburbs/list`, {
+        withCredentials: true
+      });
+      setSuburbs(response.data);
+    } catch (error) {
+      console.error('Failed to load suburbs');
+    }
+  };
 
   const loadMembers = async () => {
     try {
@@ -84,6 +101,7 @@ function MembersPage({ user }) {
       address: '',
       suburb: '',
       postcode: '',
+      state: '',
       phone1: '',
       phone2: '',
       email1: '',
@@ -91,6 +109,7 @@ function MembersPage({ user }) {
       life_member: false,
       financial: false,
       membership_type: 'Full',
+      family_members: [],
       interest: 'Both',
       date_paid: '',
       expiry_date: '',
@@ -98,6 +117,7 @@ function MembersPage({ user }) {
       receive_emails: true,
       receive_sms: true
     });
+    setSuburbInput('');
     setShowDialog(true);
   };
 
@@ -108,6 +128,7 @@ function MembersPage({ user }) {
       address: member.address,
       suburb: member.suburb,
       postcode: member.postcode,
+      state: member.state || '',
       phone1: member.phone1 || '',
       phone2: member.phone2 || '',
       email1: member.email1 || '',
@@ -115,6 +136,7 @@ function MembersPage({ user }) {
       life_member: member.life_member,
       financial: member.financial,
       membership_type: member.membership_type,
+      family_members: member.family_members || [],
       interest: member.interest,
       date_paid: member.date_paid ? member.date_paid.split('T')[0] : '',
       expiry_date: member.expiry_date ? member.expiry_date.split('T')[0] : '',
@@ -122,32 +144,62 @@ function MembersPage({ user }) {
       receive_emails: member.receive_emails,
       receive_sms: member.receive_sms
     });
+    setSuburbInput(member.suburb);
     setShowDialog(true);
   };
 
   const handleSave = async () => {
     try {
+      const dataToSave = {
+        ...formData,
+        suburb: suburbInput || formData.suburb
+      };
+      
       if (editingMember) {
         await axios.put(
           `${BACKEND_URL}/api/members/${editingMember.member_id}`,
-          formData,
+          dataToSave,
           { withCredentials: true }
         );
         toast.success('Member updated');
       } else {
         await axios.post(
           `${BACKEND_URL}/api/members`,
-          formData,
+          dataToSave,
           { withCredentials: true }
         );
         toast.success('Member created');
       }
       setShowDialog(false);
       loadMembers();
+      loadSuburbs(); // Refresh suburb list
     } catch (error) {
       toast.error('Failed to save member');
     }
   };
+
+  const addFamilyMember = () => {
+    setFormData({
+      ...formData,
+      family_members: [...(formData.family_members || []), '']
+    });
+  };
+
+  const updateFamilyMember = (index, value) => {
+    const updated = [...(formData.family_members || [])];
+    updated[index] = value;
+    setFormData({ ...formData, family_members: updated });
+  };
+
+  const removeFamilyMember = (index) => {
+    const updated = [...(formData.family_members || [])];
+    updated.splice(index, 1);
+    setFormData({ ...formData, family_members: updated });
+  };
+
+  const filteredSuburbs = suburbs.filter(s => 
+    s.toLowerCase().includes(suburbInput.toLowerCase())
+  );
 
   const handleDelete = async (memberId) => {
     if (!window.confirm('Are you sure you want to delete this member? All associated vehicles will also be deleted.')) {
