@@ -17,6 +17,10 @@ function VehiclesPage({ user }) {
   const [vehicles, setVehicles] = useState([]);
   const [members, setMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchType, setSearchType] = useState('registration');
+  const [registrations, setRegistrations] = useState([]);
+  const [logBookNumbers, setLogBookNumbers] = useState([]);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [vehicleOptions, setVehicleOptions] = useState({ statuses: [], reasons: [] });
@@ -38,7 +42,22 @@ function VehiclesPage({ user }) {
     loadVehicles();
     loadMembers();
     loadVehicleOptions();
+    loadVehicleSearchData();
   }, []);
+
+  const loadVehicleSearchData = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/vehicles`, {
+        withCredentials: true
+      });
+      const regs = response.data.map(v => v.registration).filter(r => r).sort();
+      const logBooks = response.data.map(v => v.log_book_number).filter(l => l).sort();
+      setRegistrations(regs);
+      setLogBookNumbers(logBooks);
+    } catch (error) {
+      console.error('Failed to load vehicle search data');
+    }
+  };
 
   const loadVehicles = async () => {
     try {
@@ -84,15 +103,27 @@ function VehiclesPage({ user }) {
     }
 
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/vehicles`, {
-        params: { registration: searchTerm },
-        withCredentials: true
-      });
-      setVehicles(response.data);
+      if (searchType === 'logbook') {
+        // Search by log book number on frontend since backend doesn't have this endpoint
+        const filtered = vehicles.filter(v => 
+          v.log_book_number && v.log_book_number.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setVehicles(filtered);
+      } else {
+        const response = await axios.get(`${BACKEND_URL}/api/vehicles`, {
+          params: { registration: searchTerm },
+          withCredentials: true
+        });
+        setVehicles(response.data);
+      }
     } catch (error) {
       toast.error('Search failed');
     }
   };
+
+  const filteredSearchOptions = searchType === 'logbook' 
+    ? logBookNumbers.filter(lb => lb.toLowerCase().includes(searchTerm.toLowerCase()))
+    : registrations.filter(reg => reg.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const handleCreate = () => {
     setEditingVehicle(null);
@@ -149,6 +180,7 @@ function VehiclesPage({ user }) {
       }
       setShowDialog(false);
       loadVehicles();
+      loadVehicleSearchData(); // Refresh search dropdowns
     } catch (error) {
       toast.error('Failed to save vehicle');
     }
