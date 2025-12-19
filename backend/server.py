@@ -329,9 +329,8 @@ async def update_user(user_id: str, user_data: UserCreate, current_user: User = 
     return User(**user_doc)
 
 @api_router.delete("/users/{user_id}")
-async def delete_user(user_id: str):
-    user = await get_current_user()
-    if user.role != "admin":
+async def delete_user(user_id: str, current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     result = await db.users.delete_one({"user_id": user_id})
