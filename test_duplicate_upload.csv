@@ -1,0 +1,3 @@
+member_number,name,address,suburb,postcode,state,phone1,phone2,email1,email2,life_member,financial,membership_type,family_members,interest,date_paid,expiry_date,comments,receive_emails,receive_sms
+99,Test Duplicate Member,123 Test St,Adelaide,5000,SA,0400000000,,test@example.com,,false,true,Full,,Both,2024-01-01,2025-01-01,This should be skipped - duplicate of existing member 99,true,true
+NEW-001,New Member Test,456 New St,Salisbury,5108,SA,0411111111,,newtest@example.com,,false,true,Full,,Drag Racing,2024-01-01,2025-01-01,This is a new member and should be added,true,true
