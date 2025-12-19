@@ -375,8 +375,7 @@ async def get_member(member_id: str, current_user: User = Depends(get_current_us
     return Member(**member)
 
 @api_router.post("/members", response_model=Member)
-async def create_member(member_data: MemberCreate):
-    await get_current_user()
+async def create_member(member_data: MemberCreate, current_user: User = Depends(get_current_user)):
     
     max_member = await db.members.find_one({}, {"_id": 0, "member_number": 1}, sort=[("member_number", -1)])
     next_number = (max_member["member_number"] + 1) if max_member else 1
