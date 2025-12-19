@@ -642,9 +642,8 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
     return {"message": f"{count} members uploaded"}
 
 @api_router.post("/vehicles/bulk-upload")
-async def bulk_upload_vehicles(file: UploadFile = File(...)):
-    user = await get_current_user()
-    if user.role == "member_editor":
+async def bulk_upload_vehicles(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
+    if current_user.role == "member_editor":
         raise HTTPException(status_code=403, detail="Full editor or admin access required")
     
     if not file.filename.endswith('.csv'):
