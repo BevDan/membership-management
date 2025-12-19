@@ -488,7 +488,7 @@ function MembersPage({ user }) {
                 className="bg-zinc-950 border-zinc-800 font-mono"
               />
             </div>
-            <div>
+            <div className="md:col-span-2">
               <Label className="text-zinc-400 font-mono text-xs">Membership Type</Label>
               <Select
                 value={formData.membership_type}
@@ -504,6 +504,45 @@ function MembersPage({ user }) {
                 </SelectContent>
               </Select>
             </div>
+            
+            {formData.membership_type === 'Family' && (
+              <div className="md:col-span-2">
+                <Label className="text-zinc-400 font-mono text-xs mb-2 block">Family Members</Label>
+                <div className="space-y-2 p-4 bg-zinc-950 rounded-sm">
+                  {(formData.family_members || []).map((member, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={member}
+                        onChange={(e) => updateFamilyMember(index, e.target.value)}
+                        placeholder="Family member name"
+                        className="bg-zinc-900 border-zinc-800 font-mono"
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => removeFamilyMember(index)}
+                        variant="outline"
+                        size="sm"
+                        className="border-zinc-700 hover:border-red-500"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    onClick={addFamilyMember}
+                    variant="outline"
+                    className="w-full border-zinc-700 hover:border-primary font-mono uppercase"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Family Member
+                  </Button>
+                  <p className="text-xs text-zinc-500 font-mono mt-2">
+                    Add names of other family members included in this membership
+                  </p>
+                </div>
+              </div>
+            )}
             <div>
               <Label className="text-zinc-400 font-mono text-xs">Interest</Label>
               <Select
