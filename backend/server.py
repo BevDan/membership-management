@@ -272,8 +272,8 @@ async def create_session(session_id: str, response: Response):
             raise HTTPException(status_code=500, detail="Authentication failed")
 
 @api_router.get("/auth/me", response_model=User)
-async def get_me(session_token: Optional[str] = Cookie(None), authorization: Optional[str] = None):
-    return await get_current_user(session_token, authorization)
+async def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
 
 @api_router.post("/auth/logout")
 async def logout(response: Response, session_token: Optional[str] = Cookie(None)):
