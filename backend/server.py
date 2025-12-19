@@ -543,9 +543,8 @@ async def restore_vehicle(vehicle_id: str, current_user: User = Depends(get_curr
     return {"message": "Vehicle restored"}
 
 @api_router.delete("/vehicles/{vehicle_id}/permanent")
-async def delete_vehicle_permanent(vehicle_id: str):
-    user = await get_current_user()
-    if user.role != "admin":
+async def delete_vehicle_permanent(vehicle_id: str, current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     result = await db.vehicles.delete_one({"vehicle_id": vehicle_id})
