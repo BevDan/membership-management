@@ -639,6 +639,7 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
     next_auto_number = max(numeric_numbers) + 1 if numeric_numbers else 1
     
     count = 0
+    skipped = 0
     errors = []
     for idx, row in enumerate(reader, start=2):
         try:
@@ -651,6 +652,13 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
             else:
                 member_number = str(next_auto_number)
                 next_auto_number += 1
+            
+            # Check if member_number already exists (prevent duplicates)
+            existing = await db.members.find_one({"member_number": member_number}, {"_id": 0})
+            if existing:
+                skipped += 1
+                print(f"Skipping duplicate member_number: {member_number}")
+                continue
             
             # Parse family members if present
             family_members = None
