@@ -842,6 +842,37 @@ async def export_members(filters: ExportFilters, current_user: User = Depends(ge
         headers={"Content-Disposition": "attachment; filename=members_export.csv"}
     )
 
+import re
+
+def sort_member_number_key(member):
+    """
+    Sort function to handle alphanumeric member numbers.
+    Treats 1, 2, 3...9, 10A, 10B, 11...99, 100 as numeric with optional letter suffix.
+    """
+    num_str = member.get('member_number', '0')
+    # Extract numeric part and optional letter suffix
+    match = re.match(r'^(\d+)([A-Za-z]*)$', str(num_str))
+    if match:
+        num_part = int(match.group(1))
+        letter_part = match.group(2).upper() if match.group(2) else ''
+        return (num_part, letter_part)
+    # Fallback for non-standard formats
+    return (float('inf'), str(num_str))
+
+@api_router.get("/members/printable-list")
+async def get_printable_member_list(current_user: User = Depends(get_current_user)):
+    """
+    Get a printable list of members sorted by member number.
+    Returns member_number and name in two columns.
+    Any authenticated user can access this endpoint.
+    """
+    members = await db.members.find({}, {"_id": 0, "member_number": 1, "name": 1}).to_list(10000)
+    
+    # Sort by member number treating alphanumeric properly
+    sorted_members = sorted(members, key=sort_member_number_key)
+    
+    return sorted_members
+
 @api_router.post("/admin/clear-all-data")
 async def clear_all_data(
     request: Request,
