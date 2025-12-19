@@ -1192,6 +1192,82 @@ function MembersPage({ user }) {
                 className="bg-zinc-950 border-zinc-800"
               />
             </div>
+            {/* Vehicle Duration Buttons */}
+            <div className="md:col-span-2">
+              <Label className="text-zinc-400 text-xs mb-2 block">Set Vehicle Registration Duration</Label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    const today = new Date();
+                    const nextYear = today.getFullYear() + 1;
+                    const expiryDate = `${nextYear}-06-30`;
+                    setVehicleFormData({ 
+                      ...vehicleFormData, 
+                      entry_date: today.toISOString().split('T')[0],
+                      expiry_date: expiryDate
+                    });
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="border-green-600 hover:bg-green-600/20 text-green-400"
+                >
+                  1 Year
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    const today = new Date();
+                    let entryDate = vehicleFormData.entry_date ? new Date(vehicleFormData.entry_date) : null;
+                    const sixMonthsAgo = new Date();
+                    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                    
+                    if (!entryDate || entryDate < sixMonthsAgo) {
+                      entryDate = today;
+                    }
+                    
+                    const expiryYear = entryDate.getFullYear() + 2;
+                    const expiryDate = `${expiryYear}-06-30`;
+                    setVehicleFormData({ 
+                      ...vehicleFormData, 
+                      entry_date: entryDate.toISOString().split('T')[0],
+                      expiry_date: expiryDate
+                    });
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="border-blue-600 hover:bg-blue-600/20 text-blue-400"
+                >
+                  2 Years
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    const today = new Date();
+                    let entryDate = vehicleFormData.entry_date ? new Date(vehicleFormData.entry_date) : null;
+                    const sixMonthsAgo = new Date();
+                    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                    
+                    if (!entryDate || entryDate < sixMonthsAgo) {
+                      entryDate = today;
+                    }
+                    
+                    const expiryYear = entryDate.getFullYear() + 3;
+                    const expiryDate = `${expiryYear}-06-30`;
+                    setVehicleFormData({ 
+                      ...vehicleFormData, 
+                      entry_date: entryDate.toISOString().split('T')[0],
+                      expiry_date: expiryDate
+                    });
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="border-purple-600 hover:bg-purple-600/20 text-purple-400"
+                >
+                  3 Years
+                </Button>
+              </div>
+            </div>
             <div>
               <Label className="text-zinc-400 text-xs">Entry Date</Label>
               <Input
