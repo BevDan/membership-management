@@ -97,8 +97,8 @@ class MemberUpdate(BaseModel):
     state: Optional[str] = None
     phone1: Optional[str] = None
     phone2: Optional[str] = None
-    email1: Optional[EmailStr] = None
-    email2: Optional[EmailStr] = None
+    email1: Optional[str] = None  # Changed from EmailStr to allow empty strings
+    email2: Optional[str] = None  # Changed from EmailStr to allow empty strings
     life_member: Optional[bool] = None
     financial: Optional[bool] = None
     membership_type: Optional[Literal['Full', 'Family', 'Junior']] = None
