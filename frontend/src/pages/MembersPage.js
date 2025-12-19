@@ -21,9 +21,27 @@ function MembersPage({ user }) {
   const [searchType, setSearchType] = useState('name');
   const [memberNumbers, setMemberNumbers] = useState([]);
   const [memberNames, setMemberNames] = useState([]);
+  const [vehicleSearchData, setVehicleSearchData] = useState([]);
   const [showMemberNumberDropdown, setShowMemberNumberDropdown] = useState(false);
   const [showNameDropdown, setShowNameDropdown] = useState(false);
+  const [showVehicleDropdown, setShowVehicleDropdown] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
+  const [memberVehicles, setMemberVehicles] = useState([]);
+  const [showVehicleDialog, setShowVehicleDialog] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState(null);
+  const [vehicleOptions, setVehicleOptions] = useState({ statuses: [], reasons: [] });
+  const [vehicleFormData, setVehicleFormData] = useState({
+    log_book_number: '',
+    entry_date: '',
+    expiry_date: '',
+    make: '',
+    body_style: '',
+    model: '',
+    year: new Date().getFullYear(),
+    registration: '',
+    status: 'Active',
+    reason: ''
+  });
   const [editingMember, setEditingMember] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -55,7 +73,58 @@ function MembersPage({ user }) {
     loadSuburbs();
     loadMemberNumbers();
     loadMemberNames();
+    loadVehicleSearchData();
+    loadVehicleOptions();
   }, []);
+
+  const canAccessVehicles = user && (user.role === 'admin' || user.role === 'full_editor');
+
+  const loadVehicleSearchData = async () => {
+    if (!canAccessVehicles) return;
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/vehicles`, {
+        withCredentials: true
+      });
+      const data = response.data.map(v => ({
+        registration: v.registration,
+        log_book_number: v.log_book_number,
+        member_id: v.member_id,
+        vehicle: `${v.year} ${v.make} ${v.model}`
+      }));
+      setVehicleSearchData(data);
+    } catch (error) {
+      console.error('Failed to load vehicle search data');
+    }
+  };
+
+  const loadVehicleOptions = async () => {
+    if (!canAccessVehicles) return;
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/vehicle-options`, {
+        withCredentials: true
+      });
+      const options = response.data;
+      setVehicleOptions({
+        statuses: options.filter(o => o.type === 'status'),
+        reasons: options.filter(o => o.type === 'reason')
+      });
+    } catch (error) {
+      console.error('Failed to load vehicle options');
+    }
+  };
+
+  const loadMemberVehicles = async (memberId) => {
+    if (!canAccessVehicles || !memberId) return;
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/vehicles`, {
+        params: { member_id: memberId },
+        withCredentials: true
+      });
+      setMemberVehicles(response.data);
+    } catch (error) {
+      console.error('Failed to load member vehicles');
+    }
+  };
 
   const loadSuburbs = async () => {
     try {
@@ -125,15 +194,37 @@ function MembersPage({ user }) {
     }
 
     try {
-      const params = searchType === 'number' 
-        ? { member_number: String(searchTerm).trim() }
-        : { search: searchTerm };
-      
-      const response = await axios.get(`${BACKEND_URL}/api/members`, {
-        params,
-        withCredentials: true
-      });
-      setMembers(response.data);
+      if (searchType === 'registration' || searchType === 'logbook') {
+        // Find member by vehicle
+        const vehicle = vehicleSearchData.find(v => {
+          if (searchType === 'registration') {
+            return v.registration && v.registration.toLowerCase() === searchTerm.toLowerCase();
+          } else {
+            return v.log_book_number && v.log_book_number.toLowerCase() === searchTerm.toLowerCase();
+          }
+        });
+        
+        if (vehicle) {
+          const response = await axios.get(`${BACKEND_URL}/api/members/${vehicle.member_id}`, {
+            withCredentials: true
+          });
+          setMembers([response.data]);
+          toast.success('Found member by vehicle');
+        } else {
+          setMembers([]);
+          toast.info('No member found with that vehicle');
+        }
+      } else {
+        const params = searchType === 'number' 
+          ? { member_number: String(searchTerm).trim() }
+          : { search: searchTerm };
+        
+        const response = await axios.get(`${BACKEND_URL}/api/members`, {
+          params,
+          withCredentials: true
+        });
+        setMembers(response.data);
+      }
     } catch (error) {
       toast.error('Search failed');
     }
@@ -148,6 +239,15 @@ function MembersPage({ user }) {
     return member.name.toLowerCase().includes(searchLower) ||
            member.email1.toLowerCase().includes(searchLower) ||
            member.email2.toLowerCase().includes(searchLower);
+  });
+
+  const filteredVehicleSearch = vehicleSearchData.filter(v => {
+    const searchLower = searchTerm.toLowerCase();
+    if (searchType === 'registration') {
+      return v.registration && v.registration.toLowerCase().includes(searchLower);
+    } else {
+      return v.log_book_number && v.log_book_number.toLowerCase().includes(searchLower);
+    }
   });
 
   const handleCreate = () => {
@@ -177,7 +277,7 @@ function MembersPage({ user }) {
     setShowDialog(true);
   };
 
-  const handleEdit = (member) => {
+  const handleEdit = async (member) => {
     setEditingMember(member);
     setFormData({
       name: member.name,
@@ -201,6 +301,7 @@ function MembersPage({ user }) {
       receive_sms: member.receive_sms
     });
     setSuburbInput(member.suburb);
+    await loadMemberVehicles(member.member_id);
     setShowDialog(true);
   };
 
@@ -339,6 +440,8 @@ function MembersPage({ user }) {
                 <SelectContent className="bg-zinc-900 border-zinc-800">
                   <SelectItem value="name">Name/Email</SelectItem>
                   <SelectItem value="number">Member Number</SelectItem>
+                  {canAccessVehicles && <SelectItem value="registration">Vehicle Registration</SelectItem>}
+                  {canAccessVehicles && <SelectItem value="logbook">Vehicle Log Book</SelectItem>}
                 </SelectContent>
               </Select>
             </div>
