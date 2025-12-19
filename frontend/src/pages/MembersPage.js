@@ -526,8 +526,42 @@ function MembersPage({ user }) {
                     </div>
                   )}
                 </div>
-              )}
-            </div>
+              ) : (searchType === 'registration' || searchType === 'logbook') ? (
+                <div className="relative">
+                  <Input
+                    data-testid="search-input"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setShowVehicleDropdown(true);
+                    }}
+                    onFocus={() => setShowVehicleDropdown(true)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                    placeholder={searchType === 'registration' ? 'Select or type registration' : 'Select or type log book number'}
+                    className="bg-zinc-950 border-zinc-800"
+                  />
+                  {showVehicleDropdown && filteredVehicleSearch.length > 0 && searchTerm && (
+                    <div className="absolute z-50 w-full mt-1 bg-zinc-900 border-zinc-800 rounded-sm max-h-64 overflow-y-auto">
+                      {filteredVehicleSearch.slice(0, 20).map((vehicle, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            setSearchTerm(searchType === 'registration' ? vehicle.registration : vehicle.log_book_number);
+                            setShowVehicleDropdown(false);
+                            setTimeout(() => handleSearch(), 100);
+                          }}
+                          className="px-3 py-2 hover:bg-zinc-800 cursor-pointer text-sm"
+                        >
+                          <div className="text-white font-semibold">
+                            {searchType === 'registration' ? vehicle.registration : vehicle.log_book_number}
+                          </div>
+                          <div className="text-xs text-zinc-400">{vehicle.vehicle}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
             <div className="md:col-span-2 flex items-end gap-2">
               <Button
                 data-testid="search-button"
