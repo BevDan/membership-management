@@ -681,8 +681,7 @@ async def bulk_upload_vehicles(file: UploadFile = File(...), current_user: User 
     return {"message": f"{count} vehicles uploaded"}
 
 @api_router.post("/members/export")
-async def export_members(filters: ExportFilters):
-    await get_current_user()
+async def export_members(filters: ExportFilters, current_user: User = Depends(get_current_user)):
     
     query = {}
     if filters.receive_emails is not None:
