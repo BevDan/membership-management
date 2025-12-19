@@ -428,7 +428,19 @@ async def create_member(member_data: MemberCreate, current_user: User = Depends(
 @api_router.put("/members/{member_id}", response_model=Member)
 async def update_member(member_id: str, member_data: MemberUpdate, current_user: User = Depends(get_current_user)):
     
-    update_dict = {k: v for k, v in member_data.model_dump().items() if v is not None}
+    logging.info(f"Updating member {member_id} with data: {member_data.model_dump()}")
+    
+    # Build update dict, including fields that can be set to null/empty
+    raw_data = member_data.model_dump()
+    update_dict = {}
+    
+    for k, v in raw_data.items():
+        # Include None values for optional string fields to allow clearing them
+        if k in ['phone1', 'phone2', 'email1', 'email2', 'comments', 'state', 'date_paid', 'expiry_date']:
+            update_dict[k] = v  # Include None values to allow clearing
+        elif v is not None:
+            update_dict[k] = v
+    
     if 'date_paid' in update_dict and update_dict['date_paid']:
         update_dict['date_paid'] = datetime.fromisoformat(update_dict['date_paid']).isoformat()
     if 'expiry_date' in update_dict and update_dict['expiry_date']:
@@ -438,6 +450,8 @@ async def update_member(member_id: str, member_data: MemberUpdate, current_user:
         raise HTTPException(status_code=400, detail="No fields to update")
     
     update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    logging.info(f"Final update dict for {member_id}: {update_dict}")
     
     result = await db.members.update_one(
         {"member_id": member_id},
