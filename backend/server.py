@@ -637,6 +637,11 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
             member_number = next_auto_number
             next_auto_number += 1
         
+        # Parse family members if present
+        family_members = None
+        if row.get('family_members'):
+            family_members = [m.strip() for m in row.get('family_members').split(';') if m.strip()]
+        
         new_member = {
             "member_id": member_id,
             "member_number": member_number,
@@ -644,6 +649,7 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
             "address": row.get('address', ''),
             "suburb": row.get('suburb', ''),
             "postcode": row.get('postcode', ''),
+            "state": row.get('state', ''),
             "phone1": row.get('phone1'),
             "phone2": row.get('phone2'),
             "email1": row.get('email1'),
@@ -651,6 +657,7 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
             "life_member": row.get('life_member', '').lower() in ['true', 'yes', '1'],
             "financial": row.get('financial', '').lower() in ['true', 'yes', '1'],
             "membership_type": row.get('membership_type', 'Full'),
+            "family_members": family_members,
             "interest": row.get('interest', 'Both'),
             "date_paid": datetime.fromisoformat(row['date_paid']).isoformat() if row.get('date_paid') else None,
             "expiry_date": datetime.fromisoformat(row['expiry_date']).isoformat() if row.get('expiry_date') else None,
