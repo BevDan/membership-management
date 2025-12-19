@@ -64,14 +64,14 @@ function PrintableMemberList() {
                 MEMBER LIST
               </h1>
             </div>
-            <Button
+            <button
               type="button"
-              onClick={() => window.print()}
-              className="bg-orange-500 hover:bg-orange-600 uppercase"
+              onClick={() => { console.log('Print clicked'); window.print(); }}
+              className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium uppercase rounded"
             >
               <Printer className="w-4 h-4 mr-2" />
               Print
-            </Button>
+            </button>
           </div>
         </div>
       </header>
