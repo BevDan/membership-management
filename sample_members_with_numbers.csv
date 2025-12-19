@@ -1,0 +1,7 @@
+member_number,name,address,suburb,postcode,phone1,phone2,email1,email2,life_member,financial,membership_type,interest,date_paid,expiry_date,comments,receive_emails,receive_sms
+101,John Smith,123 Main Street,Adelaide,5000,0412345678,0487654321,john.smith@example.com,jsmith@gmail.com,false,true,Full,Drag Racing,2024-01-15,2025-01-15,Owns a 1969 Camaro,true,true
+102,Sarah Johnson,456 Park Avenue,Salisbury,5108,0423456789,,sarah.j@example.com,,true,true,Full,Both,2024-02-20,2025-02-20,Life member since 1995,true,true
+103,Mike Williams,789 King Road,Elizabeth,5112,0434567890,0498765432,mike.w@example.com,,false,true,Family,Drag Racing,2024-03-10,2025-03-10,Family membership with spouse,true,false
+104,Emma Brown,321 Queen Street,Gawler,5118,0445678901,,emma.brown@example.com,emmab@hotmail.com,false,false,Full,Car Enthusiast,2023-12-05,2024-12-05,Membership expired - needs renewal,false,true
+105,David Taylor,654 George Boulevard,Munno Para,5115,0456789012,,david.t@example.com,,false,true,Junior,Both,2024-04-01,2025-04-01,Junior member - under 18,true,true
+,New Member Example,999 Test Street,Adelaide,5000,0467890123,,newmember@example.com,,false,false,Full,Drag Racing,,,This row has no member number - will auto-generate,true,true
