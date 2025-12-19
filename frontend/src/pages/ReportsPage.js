@@ -56,6 +56,32 @@ function ReportsPage() {
     'unfinancial_with_vehicle': 'Unfinancial with Vehicle'
   };
 
+  const exportToCSV = () => {
+    if (members.length === 0) return;
+    
+    const headers = ['Member #', 'Name', 'Phone', 'Email', 'Financial', 'Has Vehicle'];
+    const csvRows = [headers.join(',')];
+    
+    members.forEach(m => {
+      const row = [
+        m.member_number,
+        `"${m.name.replace(/"/g, '""')}"`,
+        `"${m.phone.replace(/"/g, '""')}"`,
+        `"${m.email.replace(/"/g, '""')}"`,
+        m.financial ? 'Yes' : 'No',
+        m.has_vehicle ? 'Yes' : 'No'
+      ];
+      csvRows.push(row.join(','));
+    });
+    
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `member_report_${filterType}_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
+
   return (
     <div className="min-h-screen bg-zinc-950">
       {/* Header */}
@@ -72,18 +98,28 @@ function ReportsPage() {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
-              <h1 className="font-display text-xl sm:text-2xl font-black text-white">
+              <h1 className="text-xl sm:text-2xl font-black text-white">
                 MEMBER REPORTS
               </h1>
             </div>
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary/90 text-white font-medium uppercase rounded"
-            >
-              <Printer className="w-4 h-4 mr-2" />
-              Print
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={exportToCSV}
+                className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium uppercase rounded"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export CSV
+              </button>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary/90 text-white font-medium uppercase rounded"
+              >
+                <Printer className="w-4 h-4 mr-2" />
+                Print
+              </button>
+            </div>
           </div>
         </div>
       </header>
