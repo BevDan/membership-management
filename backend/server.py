@@ -530,9 +530,8 @@ async def archive_vehicle(vehicle_id: str, current_user: User = Depends(get_curr
     return {"message": "Vehicle archived"}
 
 @api_router.post("/vehicles/{vehicle_id}/restore")
-async def restore_vehicle(vehicle_id: str):
-    user = await get_current_user()
-    if user.role != "admin":
+async def restore_vehicle(vehicle_id: str, current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     result = await db.vehicles.update_one(
