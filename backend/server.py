@@ -488,9 +488,8 @@ async def create_vehicle(vehicle_data: VehicleCreate, current_user: User = Depen
     return Vehicle(**vehicle)
 
 @api_router.put("/vehicles/{vehicle_id}", response_model=Vehicle)
-async def update_vehicle(vehicle_id: str, vehicle_data: VehicleUpdate):
-    user = await get_current_user()
-    if user.role == "member_editor":
+async def update_vehicle(vehicle_id: str, vehicle_data: VehicleUpdate, current_user: User = Depends(get_current_user)):
+    if current_user.role == "member_editor":
         raise HTTPException(status_code=403, detail="Full editor or admin access required")
     
     update_dict = {k: v for k, v in vehicle_data.model_dump().items() if v is not None}
