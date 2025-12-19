@@ -58,7 +58,7 @@ function Dashboard({ user }) {
             <img 
               src="https://customer-assets.emergentagent.com/job_dragadmin-portal/artifacts/jywyrakv_SCDC%20Logo.png" 
               alt="SCDC"
-              className="w-12 h-12 object-contain"
+              className="w-24 h-24 object-contain"
             />
             <div>
               <h1 className="font-display text-xl sm:text-2xl font-black text-primary">
