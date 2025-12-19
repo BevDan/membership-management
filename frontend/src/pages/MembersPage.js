@@ -81,7 +81,7 @@ function MembersPage({ user }) {
 
     try {
       const params = searchType === 'number' 
-        ? { member_number: parseInt(searchTerm) }
+        ? { member_number: searchTerm }
         : { search: searchTerm };
       
       const response = await axios.get(`${BACKEND_URL}/api/members`, {
