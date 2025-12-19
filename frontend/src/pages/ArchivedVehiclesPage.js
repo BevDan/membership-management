@@ -179,7 +179,7 @@ function ArchivedVehiclesPage({ user }) {
                   </div>
                 </div>
               </Card>
-            ))}
+            ))
           )}
         </div>
       </main>
