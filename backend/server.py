@@ -657,6 +657,23 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
             if row.get('family_members'):
                 family_members = [m.strip() for m in row.get('family_members').split(';') if m.strip()]
             
+            # Clean up email fields - convert empty strings to None
+            email1 = row.get('email1', '').strip() if row.get('email1') else None
+            email1 = email1 if email1 and '@' in email1 else None
+            
+            email2 = row.get('email2', '').strip() if row.get('email2') else None
+            email2 = email2 if email2 and '@' in email2 else None
+            
+            # Clean up membership_type - default to 'Full' if empty
+            membership_type = row.get('membership_type', '').strip()
+            if membership_type not in ['Full', 'Family', 'Junior']:
+                membership_type = 'Full'
+            
+            # Clean up interest - default to 'Both' if empty
+            interest = row.get('interest', '').strip()
+            if interest not in ['Drag Racing', 'Car Enthusiast', 'Both']:
+                interest = 'Both'
+            
             new_member = {
                 "member_id": member_id,
                 "member_number": member_number,
@@ -665,18 +682,18 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
                 "suburb": row.get('suburb', ''),
                 "postcode": row.get('postcode', ''),
                 "state": row.get('state', ''),
-                "phone1": row.get('phone1'),
-                "phone2": row.get('phone2'),
-                "email1": row.get('email1'),
-                "email2": row.get('email2'),
+                "phone1": row.get('phone1', '').strip() if row.get('phone1') else None,
+                "phone2": row.get('phone2', '').strip() if row.get('phone2') else None,
+                "email1": email1,
+                "email2": email2,
                 "life_member": row.get('life_member', '').lower() in ['true', 'yes', '1'],
                 "financial": row.get('financial', '').lower() in ['true', 'yes', '1'],
-                "membership_type": row.get('membership_type', 'Full'),
+                "membership_type": membership_type,
                 "family_members": family_members,
-                "interest": row.get('interest', 'Both'),
+                "interest": interest,
                 "date_paid": datetime.fromisoformat(row['date_paid']).isoformat() if row.get('date_paid') and row.get('date_paid').strip() else None,
                 "expiry_date": datetime.fromisoformat(row['expiry_date']).isoformat() if row.get('expiry_date') and row.get('expiry_date').strip() else None,
-                "comments": row.get('comments'),
+                "comments": row.get('comments', '').strip() if row.get('comments') else None,
                 "receive_emails": row.get('receive_emails', '').lower() not in ['false', 'no', '0'],
                 "receive_sms": row.get('receive_sms', '').lower() not in ['false', 'no', '0'],
                 "created_at": now.isoformat(),
