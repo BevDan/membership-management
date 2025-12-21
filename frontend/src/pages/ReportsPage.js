@@ -53,13 +53,16 @@ function ReportsPage() {
     'all': 'All Members',
     'unfinancial': 'Unfinancial Members',
     'with_vehicle': 'Members with Vehicle',
-    'unfinancial_with_vehicle': 'Unfinancial with Vehicle'
+    'unfinancial_with_vehicle': 'Unfinancial with Vehicle',
+    'expiring_soon': 'Members Expiring Soon (within 2 months)',
+    'vehicles_expiring_soon': 'Vehicles Log Book Expiring Soon (within 2 months)',
+    'expired_vehicles': 'Members With Expired Vehicles'
   };
 
   const exportToCSV = () => {
     if (members.length === 0) return;
     
-    const headers = ['Member #', 'Name', 'Phone', 'Email', 'Financial', 'Has Vehicle'];
+    const headers = ['Member #', 'Name', 'Phone', 'Email', 'Financial', 'Has Vehicle', 'Expiry Date'];
     const csvRows = [headers.join(',')];
     
     members.forEach(m => {
@@ -69,7 +72,8 @@ function ReportsPage() {
         `"${m.phone.replace(/"/g, '""')}"`,
         `"${m.email.replace(/"/g, '""')}"`,
         m.financial ? 'Yes' : 'No',
-        m.has_vehicle ? 'Yes' : 'No'
+        m.has_vehicle ? 'Yes' : 'No',
+        m.expiry_date || ''
       ];
       csvRows.push(row.join(','));
     });
