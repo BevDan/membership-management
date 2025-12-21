@@ -229,12 +229,14 @@ function ReportsPage() {
                       {member.member_number}
                     </td>
                     <td className="py-1.5 px-3 text-sm print:text-black font-medium">
-                      <button
-                        onClick={() => navigate(`/members?edit=${member.member_id}`)}
-                        className="text-primary hover:text-primary/80 hover:underline text-left print:text-black print:no-underline"
+                      <a
+                        href={`/members?edit=${member.member_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:text-primary/80 hover:underline print:text-black print:no-underline"
                       >
                         {member.name}
-                      </button>
+                      </a>
                     </td>
                     <td className="py-1.5 px-3 text-sm text-zinc-400 print:text-black">
                       {member.phone || '-'}
