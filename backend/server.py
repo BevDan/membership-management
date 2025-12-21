@@ -444,15 +444,28 @@ async def get_member_report(
 ):
     """
     Get member report with filters.
-    filter_type: all, unfinancial, with_vehicle, unfinancial_with_vehicle
+    filter_type: all, unfinancial, with_vehicle, unfinancial_with_vehicle, 
+                 expiring_soon, vehicles_expiring_soon, expired_vehicles
     """
     
     # Get all members
     members = await db.members.find({}, {"_id": 0}).to_list(10000)
     
-    # Get vehicles and create lookup
-    vehicles = await db.vehicles.find({"archived": False}, {"_id": 0, "member_id": 1}).to_list(10000)
+    # Get vehicles and create lookups
+    vehicles = await db.vehicles.find({"archived": False}, {"_id": 0}).to_list(10000)
     members_with_vehicles = set(v["member_id"] for v in vehicles)
+    
+    # Calculate date thresholds
+    today = datetime.now(timezone.utc)
+    two_months_ahead = today + timedelta(days=60)
+    
+    # Create lookup for vehicles by member
+    vehicles_by_member = {}
+    for v in vehicles:
+        mid = v.get("member_id")
+        if mid not in vehicles_by_member:
+            vehicles_by_member[mid] = []
+        vehicles_by_member[mid].append(v)
     
     # Apply filters
     if filter_type == "unfinancial":
@@ -461,6 +474,61 @@ async def get_member_report(
         members = [m for m in members if m.get("member_id") in members_with_vehicles]
     elif filter_type == "unfinancial_with_vehicle":
         members = [m for m in members if not m.get("financial") and m.get("member_id") in members_with_vehicles]
+    elif filter_type == "expiring_soon":
+        # Members whose expiry date is within 2 months
+        filtered = []
+        for m in members:
+            expiry = m.get("expiry_date")
+            if expiry:
+                try:
+                    if isinstance(expiry, str):
+                        expiry_date = datetime.fromisoformat(expiry.replace('Z', '+00:00'))
+                    else:
+                        expiry_date = expiry
+                    # Make timezone aware if not
+                    if expiry_date.tzinfo is None:
+                        expiry_date = expiry_date.replace(tzinfo=timezone.utc)
+                    if today <= expiry_date <= two_months_ahead:
+                        filtered.append(m)
+                except:
+                    pass
+        members = filtered
+    elif filter_type == "vehicles_expiring_soon":
+        # Members with at least one vehicle expiring within 2 months
+        members_with_expiring = set()
+        for v in vehicles:
+            expiry = v.get("expiry_date")
+            if expiry:
+                try:
+                    if isinstance(expiry, str):
+                        expiry_date = datetime.fromisoformat(expiry.replace('Z', '+00:00'))
+                    else:
+                        expiry_date = expiry
+                    if expiry_date.tzinfo is None:
+                        expiry_date = expiry_date.replace(tzinfo=timezone.utc)
+                    if today <= expiry_date <= two_months_ahead:
+                        members_with_expiring.add(v.get("member_id"))
+                except:
+                    pass
+        members = [m for m in members if m.get("member_id") in members_with_expiring]
+    elif filter_type == "expired_vehicles":
+        # Members with at least one expired vehicle
+        members_with_expired = set()
+        for v in vehicles:
+            expiry = v.get("expiry_date")
+            if expiry:
+                try:
+                    if isinstance(expiry, str):
+                        expiry_date = datetime.fromisoformat(expiry.replace('Z', '+00:00'))
+                    else:
+                        expiry_date = expiry
+                    if expiry_date.tzinfo is None:
+                        expiry_date = expiry_date.replace(tzinfo=timezone.utc)
+                    if expiry_date < today:
+                        members_with_expired.add(v.get("member_id"))
+                except:
+                    pass
+        members = [m for m in members if m.get("member_id") in members_with_expired]
     
     # Build report data
     report = []
@@ -483,6 +551,18 @@ async def get_member_report(
         else:
             email = email1 or email2
         
+        # Get expiry date for display
+        expiry = m.get("expiry_date")
+        expiry_str = ""
+        if expiry:
+            try:
+                if isinstance(expiry, str):
+                    expiry_str = expiry.split('T')[0]
+                else:
+                    expiry_str = expiry.strftime('%Y-%m-%d')
+            except:
+                expiry_str = str(expiry)
+        
         report.append({
             "member_id": m.get("member_id"),
             "member_number": m.get("member_number"),
@@ -490,13 +570,51 @@ async def get_member_report(
             "phone": phone,
             "email": email,
             "financial": m.get("financial", False),
-            "has_vehicle": has_vehicle
+            "has_vehicle": has_vehicle,
+            "expiry_date": expiry_str
         })
     
     # Sort by member number
     report = sorted(report, key=lambda x: sort_member_number_key(x))
     
     return report
+
+@api_router.post("/admin/mark-expired-unfinancial")
+async def mark_expired_members_unfinancial(current_user: User = Depends(get_current_user)):
+    """
+    Mark all members whose expiry date has passed as unfinancial.
+    Any authenticated user can run this.
+    """
+    today = datetime.now(timezone.utc)
+    
+    # Get all financial members
+    members = await db.members.find({"financial": True}, {"_id": 0}).to_list(10000)
+    
+    updated_count = 0
+    for m in members:
+        expiry = m.get("expiry_date")
+        if expiry:
+            try:
+                if isinstance(expiry, str):
+                    expiry_date = datetime.fromisoformat(expiry.replace('Z', '+00:00'))
+                else:
+                    expiry_date = expiry
+                
+                if expiry_date.tzinfo is None:
+                    expiry_date = expiry_date.replace(tzinfo=timezone.utc)
+                
+                if expiry_date < today:
+                    # Mark as unfinancial
+                    await db.members.update_one(
+                        {"member_id": m.get("member_id")},
+                        {"$set": {"financial": False, "updated_at": datetime.now(timezone.utc).isoformat()}}
+                    )
+                    updated_count += 1
+            except Exception as e:
+                logging.error(f"Error processing member {m.get('member_id')}: {e}")
+                continue
+    
+    return {"message": f"Marked {updated_count} expired members as unfinancial"}
 
 @api_router.get("/members/printable-list")
 async def get_printable_member_list(current_user: User = Depends(get_current_user)):
