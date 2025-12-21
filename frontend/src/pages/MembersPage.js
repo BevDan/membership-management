@@ -1063,41 +1063,64 @@ function MembersPage({ user }) {
                 <p className="text-zinc-500 text-sm text-center py-4">No vehicles registered for this member</p>
               ) : (
                 <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {memberVehicles.map((vehicle) => (
-                    <div
-                      key={vehicle.vehicle_id}
-                      className="flex items-center justify-between p-3 bg-zinc-950 border border-zinc-800 rounded-sm"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <span className="text-primary font-bold">{vehicle.registration || 'No Rego'}</span>
-                          <span className="text-zinc-400 text-sm">Log Book: {vehicle.log_book_number}</span>
+                  {memberVehicles.map((vehicle) => {
+                    // Check if vehicle is expired
+                    const today = new Date();
+                    let isExpired = false;
+                    let expiryStr = '';
+                    if (vehicle.expiry_date) {
+                      const expiry = new Date(vehicle.expiry_date);
+                      isExpired = expiry < today && vehicle.status === 'Active';
+                      expiryStr = vehicle.expiry_date.split('T')[0];
+                    }
+                    
+                    return (
+                      <div
+                        key={vehicle.vehicle_id}
+                        className={`flex items-center justify-between p-3 bg-zinc-950 border rounded-sm ${
+                          isExpired ? 'border-red-500/50' : 'border-zinc-800'
+                        }`}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <span className="text-primary font-bold">{vehicle.registration || 'No Rego'}</span>
+                            <span className="text-zinc-400 text-sm">Log Book: {vehicle.log_book_number}</span>
+                            {isExpired && (
+                              <span className="px-2 py-0.5 text-xs rounded bg-red-500/20 text-red-400 font-bold">
+                                EXPIRED
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-white text-sm mt-1">
+                            {vehicle.year} {vehicle.make} {vehicle.model} - {vehicle.body_style}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className={`px-2 py-0.5 text-xs rounded ${
+                              vehicle.status === 'Active' ? 'bg-green-500/20 text-green-400' : 'bg-zinc-700 text-zinc-400'
+                            }`}>
+                              {vehicle.status}
+                            </span>
+                            {expiryStr && (
+                              <span className={`text-xs ${isExpired ? 'text-red-400' : 'text-zinc-500'}`}>
+                                Expires: {expiryStr}
+                              </span>
+                            )}
+                            {vehicle.reason && (
+                              <span className="text-zinc-500 text-xs">• {vehicle.reason}</span>
+                            )}
+                          </div>
                         </div>
-                        <p className="text-white text-sm mt-1">
-                          {vehicle.year} {vehicle.make} {vehicle.model} - {vehicle.body_style}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className={`px-2 py-0.5 text-xs rounded ${
-                            vehicle.status === 'Active' ? 'bg-green-500/20 text-green-400' : 'bg-zinc-700 text-zinc-400'
-                          }`}>
-                            {vehicle.status}
-                          </span>
-                          {vehicle.reason && (
-                            <span className="text-zinc-500 text-xs">{vehicle.reason}</span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => {
-                            setEditingVehicle(vehicle);
-                            setVehicleFormData({
-                              log_book_number: vehicle.log_book_number,
-                              entry_date: vehicle.entry_date ? vehicle.entry_date.split('T')[0] : '',
-                              expiry_date: vehicle.expiry_date ? vehicle.expiry_date.split('T')[0] : '',
-                              make: vehicle.make,
-                              body_style: vehicle.body_style,
-                              model: vehicle.model,
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => {
+                              setEditingVehicle(vehicle);
+                              setVehicleFormData({
+                                log_book_number: vehicle.log_book_number,
+                                entry_date: vehicle.entry_date ? vehicle.entry_date.split('T')[0] : '',
+                                expiry_date: vehicle.expiry_date ? vehicle.expiry_date.split('T')[0] : '',
+                                make: vehicle.make,
+                                body_style: vehicle.body_style,
+                                model: vehicle.model,
                               year: vehicle.year,
                               registration: vehicle.registration,
                               status: vehicle.status,
