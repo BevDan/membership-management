@@ -199,19 +199,22 @@ function ReportsPage() {
                   <th className="text-left py-2 px-3 font-mono text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
                     #
                   </th>
-                  <th className="text-left py-2 px-3 font-mono text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
+                  <th className="text-left py-2 px-3 text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
                     Name
                   </th>
-                  <th className="text-left py-2 px-3 font-mono text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
+                  <th className="text-left py-2 px-3 text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
                     Phone
                   </th>
-                  <th className="text-left py-2 px-3 font-mono text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
+                  <th className="text-left py-2 px-3 text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
                     Email
                   </th>
-                  <th className="text-center py-2 px-3 font-mono text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
+                  <th className="text-center py-2 px-3 text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
+                    Expiry
+                  </th>
+                  <th className="text-center py-2 px-3 text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
                     Financial
                   </th>
-                  <th className="text-center py-2 px-3 font-mono text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
+                  <th className="text-center py-2 px-3 text-xs uppercase text-zinc-400 print:text-black bg-zinc-900 print:bg-gray-200">
                     Vehicle
                   </th>
                 </tr>
@@ -233,6 +236,9 @@ function ReportsPage() {
                     </td>
                     <td className="py-1.5 px-3 text-sm text-zinc-400 print:text-black">
                       {member.email || '-'}
+                    </td>
+                    <td className="py-1.5 px-3 text-center text-sm text-zinc-400 print:text-black">
+                      {member.expiry_date || '-'}
                     </td>
                     <td className="py-1.5 px-3 text-center">
                       {member.financial ? (
