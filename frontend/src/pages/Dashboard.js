@@ -192,6 +192,24 @@ function Dashboard({ user }) {
           </Card>
         </div>
 
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <Card className="bg-zinc-900 border-zinc-800 p-4 rounded-sm">
+            <p className="text-xs text-zinc-400 uppercase mb-3">Quick Actions</p>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={handleCheckExpired}
+                disabled={checkingExpired}
+                variant="outline"
+                className="border-orange-600 hover:bg-orange-600/20 text-orange-400"
+              >
+                <AlertTriangle className="w-4 h-4 mr-2" />
+                {checkingExpired ? 'Checking...' : 'Mark Expired Members Unfinancial'}
+              </Button>
+            </div>
+          </Card>
+        </div>
+
         {/* Navigation Buttons */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           <Button
