@@ -76,7 +76,27 @@ function MembersPage({ user }) {
     loadMemberNames();
     loadVehicleSearchData();
     loadVehicleOptions();
+    
+    // Check for edit parameter in URL
+    const editMemberId = searchParams.get('edit');
+    if (editMemberId) {
+      loadMemberForEdit(editMemberId);
+    }
   }, []);
+
+  const loadMemberForEdit = async (memberId) => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/members/${memberId}`, {
+        withCredentials: true
+      });
+      const member = response.data;
+      handleEdit(member);
+      // Clear the URL parameter
+      setSearchParams({});
+    } catch (error) {
+      toast.error('Failed to load member');
+    }
+  };
 
   const canAccessVehicles = user && (user.role === 'admin' || user.role === 'full_editor');
 
