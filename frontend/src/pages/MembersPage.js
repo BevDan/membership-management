@@ -865,7 +865,8 @@ function MembersPage({ user }) {
                         setFormData({ 
                           ...formData, 
                           date_paid: today.toISOString().split('T')[0],
-                          expiry_date: expiryDate
+                          expiry_date: expiryDate,
+                          financial: true
                         });
                       }}
                       variant="outline"
@@ -891,7 +892,8 @@ function MembersPage({ user }) {
                         setFormData({ 
                           ...formData, 
                           date_paid: datePaid.toISOString().split('T')[0],
-                          expiry_date: expiryDate
+                          expiry_date: expiryDate,
+                          financial: true
                         });
                       }}
                       variant="outline"
@@ -917,7 +919,8 @@ function MembersPage({ user }) {
                         setFormData({ 
                           ...formData, 
                           date_paid: datePaid.toISOString().split('T')[0],
-                          expiry_date: expiryDate
+                          expiry_date: expiryDate,
+                          financial: true
                         });
                       }}
                       variant="outline"
