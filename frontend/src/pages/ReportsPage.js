@@ -132,8 +132,8 @@ function ReportsPage() {
         {/* Filter Controls - hidden when printing */}
         <Card className="bg-zinc-900 border-zinc-800 p-4 mb-6 print:hidden">
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex-1 min-w-[200px]">
-              <label className="font-mono text-xs text-zinc-400 uppercase mb-2 block">Filter</label>
+            <div className="flex-1 min-w-[300px]">
+              <label className="text-xs text-zinc-400 uppercase mb-2 block">Filter</label>
               <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger className="bg-zinc-950 border-zinc-800">
                   <SelectValue />
@@ -143,11 +143,14 @@ function ReportsPage() {
                   <SelectItem value="unfinancial">Unfinancial Members</SelectItem>
                   <SelectItem value="with_vehicle">Members with at least one Vehicle</SelectItem>
                   <SelectItem value="unfinancial_with_vehicle">Unfinancial Members with Vehicle</SelectItem>
+                  <SelectItem value="expiring_soon">Members Expiring Soon (within 2 months)</SelectItem>
+                  <SelectItem value="vehicles_expiring_soon">Vehicles Log Book Expiring Soon (within 2 months)</SelectItem>
+                  <SelectItem value="expired_vehicles">Members With Expired Vehicles</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="text-right">
-              <p className="font-mono text-sm text-zinc-400">
+              <p className="text-sm text-zinc-400">
                 Showing <span className="text-white font-bold">{members.length}</span> members
               </p>
             </div>
@@ -155,7 +158,7 @@ function ReportsPage() {
           
           {/* Legend */}
           <div className="mt-4 pt-4 border-t border-zinc-800">
-            <p className="font-mono text-xs text-zinc-500 uppercase mb-2">Row Color Legend</p>
+            <p className="text-xs text-zinc-500 uppercase mb-2">Row Color Legend</p>
             <div className="flex flex-wrap gap-4 text-xs">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-green-600/30"></div>
