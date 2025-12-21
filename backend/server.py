@@ -232,6 +232,100 @@ async def get_current_user(request: Request, session_token: Optional[str] = Cook
     
     return User(**user_doc)
 
+# Username/Password Authentication
+@api_router.post("/auth/register")
+async def register_user(user_data: UserRegister, response: Response):
+    """Register a new user with email/password. First user becomes admin."""
+    
+    # Check if email already exists
+    existing = await db.users.find_one({"email": user_data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # First user becomes admin
+    user_count = await db.users.count_documents({})
+    user_role = "admin" if user_count == 0 else "member_editor"
+    
+    # Create user
+    user_id = f"user_{uuid.uuid4().hex[:12]}"
+    password_hash = hash_password(user_data.password)
+    
+    await db.users.insert_one({
+        "user_id": user_id,
+        "email": user_data.email,
+        "name": user_data.name,
+        "role": user_role,
+        "password_hash": password_hash,
+        "picture": None,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    # Create session
+    session_token = f"session_{uuid.uuid4().hex}"
+    expires_at = datetime.now(timezone.utc) + timedelta(days=90)
+    
+    await db.user_sessions.insert_one({
+        "user_id": user_id,
+        "session_token": session_token,
+        "expires_at": expires_at.isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    response.set_cookie(
+        key="session_token",
+        value=session_token,
+        httponly=True,
+        secure=False,  # Set to False for local/HTTP access
+        samesite="lax",
+        path="/",
+        max_age=90*24*60*60
+    )
+    
+    return {"message": "User registered successfully", "role": user_role}
+
+@api_router.post("/auth/login")
+async def login_user(credentials: UserLogin, response: Response):
+    """Login with email/password"""
+    
+    # Find user
+    user = await db.users.find_one({"email": credentials.email})
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Check password
+    if "password_hash" not in user:
+        raise HTTPException(status_code=401, detail="Account uses Google login. Please use Google to sign in or contact admin to reset password.")
+    
+    if not verify_password(credentials.password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Create session
+    session_token = f"session_{uuid.uuid4().hex}"
+    expires_at = datetime.now(timezone.utc) + timedelta(days=90)
+    
+    await db.user_sessions.insert_one({
+        "user_id": user["user_id"],
+        "session_token": session_token,
+        "expires_at": expires_at.isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    response.set_cookie(
+        key="session_token",
+        value=session_token,
+        httponly=True,
+        secure=False,  # Set to False for local/HTTP access
+        samesite="lax",
+        path="/",
+        max_age=90*24*60*60
+    )
+    
+    user_doc = await db.users.find_one({"user_id": user["user_id"]}, {"_id": 0, "password_hash": 0})
+    if isinstance(user_doc['created_at'], str):
+        user_doc['created_at'] = datetime.fromisoformat(user_doc['created_at'])
+    
+    return User(**user_doc)
+
 @api_router.post("/auth/session")
 async def create_session(session_id: str, response: Response):
     async with httpx.AsyncClient() as client:
