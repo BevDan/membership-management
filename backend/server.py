@@ -494,9 +494,12 @@ async def get_member_report(
                     pass
         members = filtered
     elif filter_type == "vehicles_expiring_soon":
-        # Members with at least one vehicle expiring within 2 months
+        # Members with at least one active vehicle expiring within 2 months
         members_with_expiring = set()
         for v in vehicles:
+            # Only check vehicles with Active status
+            if v.get("status") != "Active":
+                continue
             expiry = v.get("expiry_date")
             if expiry:
                 try:
