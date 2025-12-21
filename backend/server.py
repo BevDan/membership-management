@@ -56,6 +56,15 @@ class UserCreate(BaseModel):
     name: str
     role: Literal['admin', 'full_editor', 'member_editor']
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserRegister(BaseModel):
+    email: EmailStr
+    name: str
+    password: str
+
 class UserSession(BaseModel):
     user_id: str
     session_token: str
