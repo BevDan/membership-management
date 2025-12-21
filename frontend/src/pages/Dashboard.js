@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Users, Car, Upload, Download, Settings, Archive, LogOut, FileText, ClipboardList } from 'lucide-react';
+import { Users, Car, Upload, Download, Settings, Archive, LogOut, FileText, ClipboardList, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -22,6 +22,7 @@ function Dashboard({ user }) {
     interest: { drag_racing: 0, car_enthusiast: 0, both: 0 },
     membership_type: { full: 0, family: 0, junior: 0 }
   });
+  const [checkingExpired, setCheckingExpired] = useState(false);
 
   useEffect(() => {
     loadStats();
@@ -35,6 +36,25 @@ function Dashboard({ user }) {
       setStats(response.data);
     } catch (error) {
       console.error('Error loading stats:', error);
+    }
+  };
+
+  const handleCheckExpired = async () => {
+    if (!window.confirm('This will mark all members with expired memberships as Unfinancial. Continue?')) {
+      return;
+    }
+    
+    setCheckingExpired(true);
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/admin/mark-expired-unfinancial`, {}, { 
+        withCredentials: true 
+      });
+      toast.success(response.data.message);
+      loadStats(); // Refresh stats
+    } catch (error) {
+      toast.error('Failed to check expired members');
+    } finally {
+      setCheckingExpired(false);
     }
   };
 
