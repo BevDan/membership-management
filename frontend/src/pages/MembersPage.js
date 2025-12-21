@@ -1156,7 +1156,8 @@ function MembersPage({ user }) {
                         </Button>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
