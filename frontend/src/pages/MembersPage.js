@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -16,6 +16,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 function MembersPage({ user }) {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [members, setMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('name');
