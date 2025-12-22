@@ -574,16 +574,24 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
 @api_router.get("/reports/members")
 async def get_member_report(
     filter_type: str = "all",
+    include_inactive: bool = False,
     current_user: User = Depends(get_current_user)
 ):
     """
     Get member report with filters.
     filter_type: all, unfinancial, with_vehicle, unfinancial_with_vehicle, 
-                 expiring_soon, vehicles_expiring_soon, expired_vehicles
+                 expiring_soon, vehicles_expiring_soon, expired_vehicles, inactive_only
+    include_inactive: if True, includes inactive members in results (except for inactive_only filter)
     """
     
     # Get all members
     members = await db.members.find({}, {"_id": 0}).to_list(10000)
+    
+    # Filter out inactive members by default (unless specifically requesting them or include_inactive is True)
+    if filter_type == "inactive_only":
+        members = [m for m in members if m.get("inactive")]
+    elif not include_inactive:
+        members = [m for m in members if not m.get("inactive")]
     
     # Get vehicles and create lookups
     vehicles = await db.vehicles.find({"archived": False}, {"_id": 0}).to_list(10000)
