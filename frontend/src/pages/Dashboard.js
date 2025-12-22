@@ -117,7 +117,7 @@ function Dashboard({ user }) {
         </div>
 
         {/* Main Stats Row - Members grouped together, vehicles at end */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
           <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-primary p-4 rounded-sm">
             <p className="text-xs text-zinc-400 uppercase mb-1">Total Members</p>
             <p className="font-display text-3xl font-black text-white">{stats.total_members}</p>
@@ -128,7 +128,11 @@ function Dashboard({ user }) {
           </Card>
           <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-orange-500 p-4 rounded-sm">
             <p className="text-xs text-zinc-400 uppercase mb-1">Unfinancial Members</p>
-            <p className="font-display text-3xl font-black text-white">{stats.total_members - stats.financial_members}</p>
+            <p className="font-display text-3xl font-black text-white">{stats.unfinancial_members}</p>
+          </Card>
+          <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-zinc-500 p-4 rounded-sm">
+            <p className="text-xs text-zinc-400 uppercase mb-1">Inactive Members</p>
+            <p className="font-display text-3xl font-black text-white">{stats.inactive_members}</p>
           </Card>
           <Card className="bg-zinc-900 border-zinc-800 border-l-4 border-l-accent p-4 rounded-sm">
             <p className="text-xs text-zinc-400 uppercase mb-1">Active Vehicles</p>
