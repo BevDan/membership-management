@@ -317,8 +317,8 @@ async def login_user(credentials: UserLogin, response: Response):
         key="session_token",
         value=session_token,
         httponly=True,
-        secure=False,  # Set to False for local/HTTP access
-        samesite="lax",
+        secure=True,  # Required for SameSite=None
+        samesite="none",  # Allow cross-site cookies for production
         path="/",
         max_age=90*24*60*60
     )
