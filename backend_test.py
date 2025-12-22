@@ -593,6 +593,7 @@ Bulk Test Member,456 Bulk St,Bulk Suburb,67890,0487654321,bulk.test@example.com,
             self.test_authentication()
             self.test_role_based_access()
             self.test_member_operations()
+            self.test_inactive_member_functionality()
             self.test_vehicle_operations()
             self.test_vehicle_options()
             self.test_bulk_operations()
