@@ -251,9 +251,9 @@ class DragClubAPITester:
             success = response and response.status_code == 200
             if success:
                 updated_member = response.json()
-                success = updated_member.get('financial') == False
+                success = updated_member.get('financial') == False and updated_member.get('inactive') == True
             self.log_test("Get updated member", success,
-                         f"Financial status: {updated_member.get('financial') if response and response.status_code == 200 else 'N/A'}")
+                         f"Financial: {updated_member.get('financial') if response and response.status_code == 200 else 'N/A'}, Inactive: {updated_member.get('inactive') if response and response.status_code == 200 else 'N/A'}")
             
             return member_id
         else:
