@@ -541,6 +541,7 @@ Bulk Test Member,456 Bulk St,Bulk Suburb,67890,0487654321,bulk.test@example.com,
             self.log_test("Create inactive member", False,
                          f"Status: {response.status_code if response else 'No response'}", True)
             return None
+    def test_member_editor_restrictions(self):
         """Test that member_editor cannot access vehicle creation"""
         print("\n🚫 Testing Member Editor Restrictions...")
         
