@@ -76,7 +76,7 @@ function BulkUploadPage({ user }) {
   const downloadMemberTemplate = () => {
     const headers = [
       'member_number', 'name', 'address', 'suburb', 'postcode', 'state', 'phone1', 'phone2',
-      'email1', 'email2', 'life_member', 'financial', 'membership_type', 'family_members',
+      'email1', 'email2', 'life_member', 'financial', 'inactive', 'membership_type', 'family_members',
       'interest', 'date_paid', 'expiry_date', 'comments', 'receive_emails', 'receive_sms'
     ];
     const csvContent = headers.join(',') + '\n';
