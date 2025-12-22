@@ -650,6 +650,11 @@ function MembersPage({ user }) {
                     <div>
                       <p className="text-xs text-zinc-500 uppercase mb-1">Status</p>
                       <div className="flex flex-wrap gap-2">
+                        {member.inactive && (
+                          <span className="px-2 py-1 bg-zinc-600/30 text-zinc-400 text-xs uppercase rounded-sm">
+                            Inactive
+                          </span>
+                        )}
                         {member.financial && (
                           <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs uppercase rounded-sm">
                             Financial
