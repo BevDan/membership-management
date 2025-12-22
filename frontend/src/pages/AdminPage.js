@@ -238,17 +238,24 @@ function AdminPage({ user }) {
                     <div>
                       <p className="font-mono text-sm font-bold text-white">{u.name}</p>
                       <p className="font-mono text-xs text-zinc-400">{u.email}</p>
-                      <span
-                        className={`inline-block mt-2 px-2 py-1 font-mono text-xs uppercase rounded-sm ${
-                          u.role === 'admin'
-                            ? 'bg-red-500/20 text-red-400'
-                            : u.role === 'full_editor'
-                            ? 'bg-primary/20 text-primary'
-                            : 'bg-zinc-700 text-zinc-300'
-                        }`}
-                      >
-                        {u.role.replace('_', ' ')}
-                      </span>
+                      <div className="flex gap-2 mt-2">
+                        <span
+                          className={`inline-block px-2 py-1 font-mono text-xs uppercase rounded-sm ${
+                            u.role === 'admin'
+                              ? 'bg-red-500/20 text-red-400'
+                              : u.role === 'full_editor'
+                              ? 'bg-primary/20 text-primary'
+                              : 'bg-zinc-700 text-zinc-300'
+                          }`}
+                        >
+                          {u.role.replace('_', ' ')}
+                        </span>
+                        {u.must_change_password && (
+                          <span className="inline-block px-2 py-1 font-mono text-xs uppercase rounded-sm bg-yellow-500/20 text-yellow-400">
+                            Password Change Required
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       <Button
