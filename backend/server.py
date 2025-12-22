@@ -1098,7 +1098,19 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
         raise HTTPException(status_code=400, detail="Only CSV files allowed")
     
     content = await file.read()
-    csv_data = content.decode('utf-8')
+    
+    # Try different encodings - Excel often uses cp1252 or latin-1
+    csv_data = None
+    for encoding in ['utf-8', 'utf-8-sig', 'cp1252', 'latin-1']:
+        try:
+            csv_data = content.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    
+    if csv_data is None:
+        raise HTTPException(status_code=400, detail="Could not decode CSV file. Please save it as UTF-8 encoding.")
+    
     reader = csv.DictReader(io.StringIO(csv_data))
     
     # Get the highest numeric member number for auto-generation
