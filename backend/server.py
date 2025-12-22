@@ -718,6 +718,7 @@ async def get_member_report(
             "phone": phone,
             "email": email,
             "financial": m.get("financial", False),
+            "inactive": m.get("inactive", False),
             "has_vehicle": has_vehicle,
             "expiry_date": expiry_str
         })
