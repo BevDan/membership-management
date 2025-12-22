@@ -287,7 +287,7 @@ async def register_user(user_data: UserRegister, response: Response):
     return {"message": "User registered successfully", "role": user_role}
 
 @api_router.post("/auth/login")
-async def login_user(credentials: UserLogin, response: Response):
+async def login_user(credentials: UserLogin, response: Response, request: Request):
     """Login with email/password"""
     
     # Find user
@@ -313,12 +313,15 @@ async def login_user(credentials: UserLogin, response: Response):
         "created_at": datetime.now(timezone.utc).isoformat()
     })
     
+    # Detect if request is over HTTPS (via Cloudflare/proxy)
+    is_https = request.headers.get("X-Forwarded-Proto") == "https"
+    
     response.set_cookie(
         key="session_token",
         value=session_token,
         httponly=True,
-        secure=True,  # Required for SameSite=None
-        samesite="none",  # Allow cross-site cookies for production
+        secure=is_https,
+        samesite="none" if is_https else "lax",
         path="/",
         max_age=90*24*60*60
     )
