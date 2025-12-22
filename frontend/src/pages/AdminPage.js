@@ -73,19 +73,25 @@ function AdminPage({ user }) {
   const handleSaveUser = async () => {
     try {
       if (editingUser) {
+        // Only send name and role for updates (no password change here)
         await axios.put(
           `${BACKEND_URL}/api/users/${editingUser.user_id}`,
-          userFormData,
+          { email: userFormData.email, name: userFormData.name, role: userFormData.role },
           { withCredentials: true }
         );
         toast.success('User updated');
       } else {
+        // New user - password is required
+        if (!userFormData.password || userFormData.password.length < 6) {
+          toast.error('Password must be at least 6 characters');
+          return;
+        }
         await axios.post(
           `${BACKEND_URL}/api/users`,
           userFormData,
           { withCredentials: true }
         );
-        toast.success('User created');
+        toast.success('User created. They must change their password on first login.');
       }
       setShowUserDialog(false);
       loadUsers();
