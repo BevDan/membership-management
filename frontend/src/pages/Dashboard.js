@@ -284,6 +284,14 @@ function Dashboard({ user }) {
             </Button>
           )}
 
+          <Button
+            onClick={() => navigate('/contact-lists')}
+            className="h-24 bg-zinc-900 hover:bg-zinc-800 border-2 border-zinc-700 hover:border-green-500 text-white font-mono uppercase text-sm rounded-sm transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-2"
+          >
+            <Mail className="w-8 h-8" />
+            <span>Contact Lists</span>
+          </Button>
+
           {isAdmin && (
             <Button
               onClick={() => navigate('/admin')}
