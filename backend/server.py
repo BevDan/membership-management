@@ -50,20 +50,22 @@ class User(BaseModel):
     role: Literal['admin', 'full_editor', 'member_editor']
     picture: Optional[str] = None
     created_at: datetime
+    must_change_password: bool = False
 
 class UserCreate(BaseModel):
     email: EmailStr
     name: str
     role: Literal['admin', 'full_editor', 'member_editor']
+    password: str  # Admin sets initial password
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-class UserRegister(BaseModel):
-    email: EmailStr
-    name: str
-    password: str
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+    confirm_password: str
 
 class UserSession(BaseModel):
     user_id: str
