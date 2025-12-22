@@ -1118,6 +1118,7 @@ async def bulk_upload_members(file: UploadFile = File(...), current_user: User =
                 "email2": email2,
                 "life_member": row.get('life_member', '').lower() in ['true', 'yes', '1'],
                 "financial": row.get('financial', '').lower() in ['true', 'yes', '1'],
+                "inactive": row.get('inactive', '').lower() in ['true', 'yes', '1'],
                 "membership_type": membership_type,
                 "family_members": family_members,
                 "interest": interest,
