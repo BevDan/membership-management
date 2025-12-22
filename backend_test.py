@@ -457,7 +457,90 @@ Bulk Test Member,456 Bulk St,Bulk Suburb,67890,0487654321,bulk.test@example.com,
             self.log_test("Get printable member list", False,
                          f"Status: {response.status_code if response else 'No response'}", True)
 
-    def test_member_editor_restrictions(self):
+    def test_inactive_member_functionality(self):
+        """Test inactive member status functionality"""
+        print("\n🚫 Testing Inactive Member Status...")
+        
+        token = self.test_sessions['admin']
+        
+        # Create an inactive member
+        inactive_member_data = {
+            "name": "Inactive Test Member",
+            "address": "789 Inactive St",
+            "suburb": "Inactive Suburb",
+            "postcode": "99999",
+            "phone1": "0499999999",
+            "email1": "inactive.test@example.com",
+            "membership_type": "Full",
+            "interest": "Both",
+            "financial": True,
+            "inactive": True
+        }
+        
+        response = self.make_request('POST', 'members', token, inactive_member_data)
+        if response and response.status_code == 200:
+            inactive_member = response.json()
+            inactive_member_id = inactive_member.get('member_id')
+            
+            self.log_test("Create inactive member", True, 
+                         f"Created inactive member {inactive_member.get('member_number')}")
+            
+            # Test dashboard stats include inactive count
+            response = self.make_request('GET', 'stats/dashboard', token)
+            if response and response.status_code == 200:
+                stats = response.json()
+                has_inactive_count = 'inactive_members' in stats
+                has_membership_type_inactive = 'membership_type' in stats and 'inactive' in stats['membership_type']
+                
+                self.log_test("Dashboard stats include inactive members", has_inactive_count,
+                             f"Inactive count: {stats.get('inactive_members', 'Missing')}")
+                self.log_test("Dashboard membership type includes inactive", has_membership_type_inactive,
+                             f"Membership type inactive: {stats.get('membership_type', {}).get('inactive', 'Missing')}")
+            else:
+                self.log_test("Dashboard stats", False, 
+                             f"Status: {response.status_code if response else 'No response'}", True)
+            
+            # Test reports with inactive_only filter
+            response = self.make_request('GET', 'reports/members?filter_type=inactive_only', token)
+            if response and response.status_code == 200:
+                inactive_report = response.json()
+                has_inactive_member = any(m.get('member_id') == inactive_member_id for m in inactive_report)
+                
+                self.log_test("Reports inactive_only filter", has_inactive_member,
+                             f"Found {len(inactive_report)} inactive members, includes test member: {has_inactive_member}")
+            else:
+                self.log_test("Reports inactive_only filter", False,
+                             f"Status: {response.status_code if response else 'No response'}")
+            
+            # Test reports exclude inactive by default
+            response = self.make_request('GET', 'reports/members?filter_type=all', token)
+            if response and response.status_code == 200:
+                all_report = response.json()
+                excludes_inactive = not any(m.get('member_id') == inactive_member_id for m in all_report)
+                
+                self.log_test("Reports exclude inactive by default", excludes_inactive,
+                             f"All members report count: {len(all_report)}, excludes inactive: {excludes_inactive}")
+            else:
+                self.log_test("Reports exclude inactive by default", False,
+                             f"Status: {response.status_code if response else 'No response'}")
+            
+            # Test reports include inactive when requested
+            response = self.make_request('GET', 'reports/members?filter_type=all&include_inactive=true', token)
+            if response and response.status_code == 200:
+                inclusive_report = response.json()
+                includes_inactive = any(m.get('member_id') == inactive_member_id for m in inclusive_report)
+                
+                self.log_test("Reports include inactive when requested", includes_inactive,
+                             f"Inclusive report count: {len(inclusive_report)}, includes inactive: {includes_inactive}")
+            else:
+                self.log_test("Reports include inactive when requested", False,
+                             f"Status: {response.status_code if response else 'No response'}")
+            
+            return inactive_member_id
+        else:
+            self.log_test("Create inactive member", False,
+                         f"Status: {response.status_code if response else 'No response'}", True)
+            return None
         """Test that member_editor cannot access vehicle creation"""
         print("\n🚫 Testing Member Editor Restrictions...")
         
