@@ -60,7 +60,8 @@ function ReportsPage() {
     'unfinancial_with_vehicle': 'Unfinancial with Vehicle',
     'expiring_soon': 'Members Expiring Soon (within 2 months)',
     'vehicles_expiring_soon': 'Vehicles Log Book Expiring Soon (within 2 months)',
-    'expired_vehicles': 'Members With Expired Vehicles'
+    'expired_vehicles': 'Members With Expired Vehicles',
+    'inactive_only': 'Inactive Members Only'
   };
 
   const exportToCSV = () => {
