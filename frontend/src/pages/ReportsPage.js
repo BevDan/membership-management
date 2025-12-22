@@ -11,18 +11,22 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 function ReportsPage() {
   const navigate = useNavigate();
   const [filterType, setFilterType] = useState('all');
+  const [includeInactive, setIncludeInactive] = useState(false);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadReport();
-  }, [filterType]);
+  }, [filterType, includeInactive]);
 
   const loadReport = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${BACKEND_URL}/api/reports/members`, {
-        params: { filter_type: filterType },
+        params: { 
+          filter_type: filterType,
+          include_inactive: includeInactive
+        },
         withCredentials: true
       });
       setMembers(response.data);
