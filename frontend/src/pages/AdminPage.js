@@ -60,13 +60,13 @@ function AdminPage({ user }) {
 
   const handleCreateUser = () => {
     setEditingUser(null);
-    setUserFormData({ email: '', name: '', role: 'member_editor' });
+    setUserFormData({ email: '', name: '', role: 'member_editor', password: '' });
     setShowUserDialog(true);
   };
 
   const handleEditUser = (user) => {
     setEditingUser(user);
-    setUserFormData({ email: user.email, name: user.name, role: user.role });
+    setUserFormData({ email: user.email, name: user.name, role: user.role, password: '' });
     setShowUserDialog(true);
   };
 
