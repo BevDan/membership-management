@@ -58,6 +58,11 @@ class UserCreate(BaseModel):
     role: Literal['admin', 'full_editor', 'member_editor']
     password: str  # Admin sets initial password
 
+class FirstAdminRegister(BaseModel):
+    email: EmailStr
+    name: str
+    password: str
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
