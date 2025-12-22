@@ -427,6 +427,20 @@ function AdminPage({ user }) {
                 className="bg-zinc-950 border-zinc-800 font-mono"
               />
             </div>
+            {!editingUser && (
+              <div>
+                <Label className="text-zinc-400 font-mono text-xs">Initial Password *</Label>
+                <Input
+                  data-testid="user-password-input"
+                  type="password"
+                  value={userFormData.password}
+                  onChange={(e) => setUserFormData({ ...userFormData, password: e.target.value })}
+                  placeholder="Min 6 characters"
+                  className="bg-zinc-950 border-zinc-800 font-mono"
+                />
+                <p className="text-xs text-zinc-500 mt-1">User will be required to change this on first login</p>
+              </div>
+            )}
             <div>
               <Label className="text-zinc-400 font-mono text-xs">Role</Label>
               <Select
