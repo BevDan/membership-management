@@ -316,6 +316,7 @@ function MembersPage({ user }) {
       email2: member.email2 || '',
       life_member: member.life_member,
       financial: member.financial,
+      inactive: member.inactive || false,
       membership_type: member.membership_type,
       family_members: member.family_members || [],
       interest: member.interest,
