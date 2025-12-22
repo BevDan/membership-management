@@ -107,92 +107,98 @@ user_problem_statement: "Drag club member/vehicle management web application wit
 backend:
   - task: "Member Update API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
         comment: "User reported 'Failed to save Member' error when updating member details"
-      - working: "NA"
+      - working: true
         agent: "main"
         comment: "Fixed EmailStr validation issue - changed email1/email2 to Optional[str] in MemberUpdate model. Added better null handling for optional fields."
 
-  - task: "Printable Member List API"
+  - task: "Inactive Member Status - Backend"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
-    priority: "medium"
+    priority: "high"
     needs_retesting: true
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "New endpoint GET /api/members/printable-list - returns members sorted by alphanumeric member_number"
+        comment: "Added inactive field to Member models. Updated /api/stats/dashboard to count inactive members separately. Updated /api/reports/members to support filter_type=inactive_only and include_inactive parameter."
 
 frontend:
   - task: "Member Search with Vehicle Search Options"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/MembersPage.js"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
         comment: "Vehicle search UI not visible in previous attempt"
-      - working: "NA"
+      - working: true
         agent: "main"
         comment: "Fixed JSX syntax error - malformed ternary operator causing build failure. Now properly handles 4 search types: number, name, registration, logbook"
 
-  - task: "Member Edit Dialog"
+  - task: "Inactive Member Status - Dashboard UI"
     implemented: true
     working: "NA"
-    file: "/app/frontend/src/pages/MembersPage.js"
-    stuck_count: 1
+    file: "/app/frontend/src/pages/Dashboard.js"
+    stuck_count: 0
     priority: "high"
     needs_retesting: true
     status_history:
-      - working: false
-        agent: "user"
-        comment: "Failed to save member error on update"
       - working: "NA"
         agent: "main"
-        comment: "Frontend sends null for empty optional fields. Backend now accepts this properly."
+        comment: "Added 'Inactive Members' stat card to dashboard. Added inactive count in Members by Type breakdown. Dashboard now shows 5 main stats: Total, Financial, Unfinancial, Inactive, Active Vehicles."
 
-  - task: "Printable Member List Page"
+  - task: "Inactive Member Status - Member Edit Dialog"
     implemented: true
     working: "NA"
-    file: "/app/frontend/src/pages/PrintableMemberList.js"
+    file: "/app/frontend/src/pages/MembersPage.js"
     stuck_count: 0
-    priority: "medium"
+    priority: "high"
     needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "New page at /member-list - displays members sorted by alphanumeric member_number with print functionality"
+        comment: "Added Inactive toggle switch to member edit dialog with description. Toggle is between Financial and Receive Emails. Inactive badge now shows on member cards."
+
+  - task: "Inactive Member Status - Reports Page"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ReportsPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added 'Inactive Members Only' filter option. Added 'Include inactive members' checkbox for other filters. Reports now exclude inactive members by default."
 
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: true
 
 test_plan:
   current_focus:
-    - "Member Update API"
-    - "Member Edit Dialog"
-    - "Printable Member List Page"
-  stuck_tasks:
-    - "Member Update API"
+    - "Inactive Member Status - Dashboard UI"
+    - "Inactive Member Status - Member Edit Dialog"
+    - "Inactive Member Status - Reports Page"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "Fixed critical JSX syntax error that was breaking the frontend build. Fixed backend MemberUpdate model to accept null values for optional email fields. Added new printable member list feature. Need to test: 1) Member update functionality works without errors, 2) Vehicle search options appear for full editors, 3) New printable member list page loads and sorts correctly"
-  - agent: "main"
-    message: "Additional changes based on user feedback: 1) Changed font from JetBrains Mono to IBM Plex Mono (clearer zeros without slash), 2) Redesigned printable member list with two-column layout and better contrast, 3) Added vehicle sub-form to member edit dialog - when editing a member, their vehicles now show at the bottom with add/edit/archive functionality. Need to test all these changes after Google OAuth login."
+    message: "Implemented Inactive Member Status feature. Backend: Added inactive field to models, updated dashboard stats to count inactive separately, updated reports endpoint with inactive_only filter and include_inactive parameter. Frontend: Added Inactive stat card to dashboard, added Inactive toggle to member edit dialog, added filter options in Reports page. Need full e2e testing."
