@@ -19,7 +19,7 @@ load_dotenv('/app/backend/.env')
 
 class DragClubAPITester:
     def __init__(self):
-        self.base_url = "https://raceroster.preview.emergentagent.com/api"
+        self.base_url = "https://memberfleet.preview.emergentagent.com/api"
         self.mongo_client = MongoClient(os.environ['MONGO_URL'])
         self.db = self.mongo_client[os.environ['DB_NAME']]
         
