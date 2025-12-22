@@ -519,24 +519,30 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
     # Count only active vehicles
     active_vehicles = sum(1 for v in vehicles if v.get("status") == "Active")
     
-    # Calculate statistics
+    # Separate active and inactive members
+    active_members = [m for m in members if not m.get("inactive")]
+    inactive_members = [m for m in members if m.get("inactive")]
+    
+    # Calculate statistics (excluding inactive members for financial counts)
     total_members = len(members)
-    financial_members = sum(1 for m in members if m.get("financial"))
+    inactive_count = len(inactive_members)
+    financial_members = sum(1 for m in active_members if m.get("financial"))
+    unfinancial_members = sum(1 for m in active_members if not m.get("financial"))
     
-    # Life member stats
-    life_members_financial = sum(1 for m in members if m.get("life_member") and m.get("financial"))
-    life_members_unfinancial = sum(1 for m in members if m.get("life_member") and not m.get("financial"))
+    # Life member stats (excluding inactive)
+    life_members_financial = sum(1 for m in active_members if m.get("life_member") and m.get("financial"))
+    life_members_unfinancial = sum(1 for m in active_members if m.get("life_member") and not m.get("financial"))
     
-    # Members with vehicles stats
-    members_with_vehicle_financial = sum(1 for m in members if m.get("member_id") in members_with_vehicles and m.get("financial"))
-    members_with_vehicle_unfinancial = sum(1 for m in members if m.get("member_id") in members_with_vehicles and not m.get("financial"))
+    # Members with vehicles stats (excluding inactive)
+    members_with_vehicle_financial = sum(1 for m in active_members if m.get("member_id") in members_with_vehicles and m.get("financial"))
+    members_with_vehicle_unfinancial = sum(1 for m in active_members if m.get("member_id") in members_with_vehicles and not m.get("financial"))
     
-    # Interest breakdown
+    # Interest breakdown (all members)
     interest_drag_racing = sum(1 for m in members if m.get("interest") == "Drag Racing")
     interest_car_enthusiast = sum(1 for m in members if m.get("interest") == "Car Enthusiast")
     interest_both = sum(1 for m in members if m.get("interest") == "Both")
     
-    # Membership type breakdown
+    # Membership type breakdown (all members)
     type_full = sum(1 for m in members if m.get("membership_type") == "Full")
     type_family = sum(1 for m in members if m.get("membership_type") == "Family")
     type_junior = sum(1 for m in members if m.get("membership_type") == "Junior")
@@ -544,6 +550,8 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
     return {
         "total_members": total_members,
         "financial_members": financial_members,
+        "unfinancial_members": unfinancial_members,
+        "inactive_members": inactive_count,
         "life_members_financial": life_members_financial,
         "life_members_unfinancial": life_members_unfinancial,
         "members_with_vehicle_financial": members_with_vehicle_financial,
@@ -558,7 +566,8 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
         "membership_type": {
             "full": type_full,
             "family": type_family,
-            "junior": type_junior
+            "junior": type_junior,
+            "inactive": inactive_count
         }
     }
 
