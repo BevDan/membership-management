@@ -282,12 +282,28 @@ function ReportsPage() {
         @media print {
           @page {
             size: A4 portrait;
-            margin: 0.5cm;
+            margin: 1cm;
           }
-          body {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          html, body {
             background: white !important;
+            color: black !important;
+          }
+          .min-h-screen {
+            min-height: auto !important;
+            background: white !important;
+          }
+          .bg-zinc-950, .bg-zinc-900, .bg-zinc-800 {
+            background: white !important;
+          }
+          .text-zinc-300, .text-zinc-400, .text-zinc-500, .text-white {
+            color: black !important;
+          }
+          .border-zinc-700, .border-zinc-800 {
+            border-color: #ccc !important;
           }
           .print\\:hidden {
             display: none !important;
@@ -297,18 +313,37 @@ function ReportsPage() {
           }
           table {
             font-size: 9pt;
+            width: 100%;
+            border-collapse: collapse;
+          }
+          th {
+            background-color: #f0f0f0 !important;
+            color: black !important;
+            font-weight: bold;
+            padding: 6px 8px !important;
+            border-bottom: 2px solid #333 !important;
+          }
+          td {
+            padding: 4px 8px !important;
+            color: black !important;
+            border-bottom: 1px solid #ddd !important;
           }
           tr {
             page-break-inside: avoid;
           }
+          /* Row highlighting for print - lighter colors */
           .bg-green-600\\/30 {
-            background-color: #86efac !important;
+            background-color: #d1fae5 !important;
           }
           .bg-green-500\\/20 {
-            background-color: #bbf7d0 !important;
+            background-color: #ecfdf5 !important;
           }
           .bg-orange-500\\/20 {
-            background-color: #fed7aa !important;
+            background-color: #fff7ed !important;
+          }
+          a {
+            color: black !important;
+            text-decoration: none !important;
           }
         }
       `}</style>
