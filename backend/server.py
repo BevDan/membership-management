@@ -131,6 +131,7 @@ class MemberUpdate(BaseModel):
     email2: Optional[str] = None  # Changed from EmailStr to allow empty strings
     life_member: Optional[bool] = None
     financial: Optional[bool] = None
+    inactive: Optional[bool] = None
     membership_type: Optional[Literal['Full', 'Family', 'Junior']] = None
     family_members: Optional[List[str]] = None
     interest: Optional[Literal['Drag Racing', 'Car Enthusiast', 'Both']] = None
