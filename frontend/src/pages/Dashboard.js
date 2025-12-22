@@ -194,6 +194,10 @@ function Dashboard({ user }) {
                 <span className="text-sm text-zinc-300">Junior</span>
                 <span className="font-bold text-white">{stats.membership_type.junior}</span>
               </div>
+              <div className="flex justify-between items-center border-t border-zinc-700 pt-2 mt-2">
+                <span className="text-sm text-zinc-400">Inactive</span>
+                <span className="font-bold text-zinc-400">{stats.membership_type.inactive}</span>
+              </div>
             </div>
           </Card>
         </div>
