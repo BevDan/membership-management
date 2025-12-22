@@ -51,7 +51,6 @@ function ReportsPage() {
 
   const filterLabels = {
     'all': 'All Members',
-    'active_only': 'Active Members Only',
     'unfinancial': 'Unfinancial Members',
     'with_vehicle': 'Members with Vehicle',
     'unfinancial_with_vehicle': 'Unfinancial with Vehicle',
