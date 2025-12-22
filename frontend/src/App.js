@@ -12,6 +12,7 @@ import AdminPage from './pages/AdminPage';
 import ArchivedVehiclesPage from './pages/ArchivedVehiclesPage';
 import PrintableMemberList from './pages/PrintableMemberList';
 import ReportsPage from './pages/ReportsPage';
+import ContactListsPage from './pages/ContactListsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from './components/ui/sonner';
 
@@ -35,6 +36,7 @@ function AppRouter() {
         <Route path="/archived-vehicles" element={<ProtectedRoute><ArchivedVehiclesPage /></ProtectedRoute>} />
         <Route path="/member-list" element={<ProtectedRoute><PrintableMemberList /></ProtectedRoute>} />
         <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
+        <Route path="/contact-lists" element={<ProtectedRoute><ContactListsPage /></ProtectedRoute>} />
       </Routes>
       <Toaster position="top-right" richColors />
     </>
