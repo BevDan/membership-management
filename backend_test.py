@@ -200,7 +200,8 @@ class DragClubAPITester:
             "email1": "test.member@example.com",
             "membership_type": "Full",
             "interest": "Drag Racing",
-            "financial": True
+            "financial": True,
+            "inactive": False
         }
         
         response = self.make_request('POST', 'members', token, member_data)
