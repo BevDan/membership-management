@@ -725,6 +725,60 @@ async def get_member_report(
     
     return report
 
+
+@api_router.get("/contact-lists")
+async def get_contact_lists(
+    list_type: str = "email",
+    interest: Optional[str] = None,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get contact lists for email or SMS campaigns.
+    list_type: 'email' or 'sms'
+    interest: None (all), 'Both', 'Drag Racing', 'Car Enthusiast'
+    Returns only active members (not inactive) who have opted in.
+    """
+    
+    # Build query - exclude inactive members
+    query = {"inactive": {"$ne": True}}
+    
+    # Filter by opt-in preference
+    if list_type == "email":
+        query["receive_emails"] = True
+    else:  # sms
+        query["receive_sms"] = True
+    
+    # Filter by interest if specified
+    if interest and interest in ['Both', 'Drag Racing', 'Car Enthusiast']:
+        query["interest"] = interest
+    
+    # Get matching members
+    members = await db.members.find(query, {"_id": 0, "email1": 1, "email2": 1, "phone1": 1, "phone2": 1}).to_list(10000)
+    
+    if list_type == "email":
+        # Collect all non-empty emails
+        emails = []
+        for m in members:
+            if m.get("email1") and m["email1"].strip():
+                emails.append(m["email1"].strip())
+            if m.get("email2") and m["email2"].strip():
+                emails.append(m["email2"].strip())
+        # Remove duplicates and join with semicolon
+        unique_emails = list(dict.fromkeys(emails))  # Preserves order, removes duplicates
+        return {"contacts": ";".join(unique_emails), "count": len(unique_emails)}
+    else:
+        # Collect all non-empty phone numbers
+        phones = []
+        for m in members:
+            if m.get("phone1") and m["phone1"].strip():
+                phones.append(m["phone1"].strip())
+            if m.get("phone2") and m["phone2"].strip():
+                phones.append(m["phone2"].strip())
+        # Remove duplicates and join with semicolon
+        unique_phones = list(dict.fromkeys(phones))
+        return {"contacts": ";".join(unique_phones), "count": len(unique_phones)}
+
+
 @api_router.post("/admin/mark-expired-unfinancial")
 async def mark_expired_members_unfinancial(current_user: User = Depends(get_current_user)):
     """
