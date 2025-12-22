@@ -787,8 +787,13 @@ async def get_member(member_id: str, current_user: User = Depends(get_current_us
         raise HTTPException(status_code=404, detail="Member not found")
     
     for field in ['created_at', 'updated_at', 'date_paid', 'expiry_date']:
-        if field in member and isinstance(member[field], str):
-            member[field] = datetime.fromisoformat(member[field])
+        if field in member and isinstance(member[field], str) and member[field]:
+            try:
+                member[field] = datetime.fromisoformat(member[field])
+            except ValueError:
+                member[field] = None
+        elif field in member and member[field] == '':
+            member[field] = None
     return Member(**member)
 
 @api_router.post("/members", response_model=Member)
