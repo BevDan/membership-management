@@ -247,7 +247,7 @@ async def get_current_user(request: Request, session_token: Optional[str] = Cook
 
 # Username/Password Authentication
 @api_router.post("/auth/register")
-async def register_first_admin(user_data: UserCreate, response: Response, request: Request):
+async def register_first_admin(user_data: FirstAdminRegister, response: Response, request: Request):
     """Register the first admin user only. After that, only admins can create users."""
     
     # Check if any users exist
