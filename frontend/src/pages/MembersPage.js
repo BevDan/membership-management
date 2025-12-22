@@ -288,6 +288,7 @@ function MembersPage({ user }) {
       email2: '',
       life_member: false,
       financial: false,
+      inactive: false,
       membership_type: 'Full',
       family_members: [],
       interest: 'Both',
