@@ -155,7 +155,7 @@ function ReportsPage() {
                 </SelectContent>
               </Select>
             </div>
-            {filterType !== 'inactive_only' && (
+            {filterType !== 'active_only' && (
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
