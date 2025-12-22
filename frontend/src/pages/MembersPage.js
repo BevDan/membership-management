@@ -1016,6 +1016,16 @@ function MembersPage({ user }) {
                 onCheckedChange={(checked) => setFormData({ ...formData, financial: checked })}
               />
             </div>
+            <div className="flex items-center justify-between p-3 bg-zinc-950 rounded-sm border border-zinc-700">
+              <div>
+                <Label className="text-zinc-400 font-mono text-xs">Inactive</Label>
+                <p className="text-xs text-zinc-500 mt-1">Exclude from financial reports</p>
+              </div>
+              <Switch
+                checked={formData.inactive}
+                onCheckedChange={(checked) => setFormData({ ...formData, inactive: checked })}
+              />
+            </div>
             <div className="flex items-center justify-between p-3 bg-zinc-950 rounded-sm">
               <Label className="text-zinc-400 font-mono text-xs">Receive Emails</Label>
               <Switch
