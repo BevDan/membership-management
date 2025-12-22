@@ -464,14 +464,16 @@ async def get_users(current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    users = await db.users.find({}, {"_id": 0}).to_list(1000)
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
     for u in users:
         if isinstance(u['created_at'], str):
             u['created_at'] = datetime.fromisoformat(u['created_at'])
+        u['must_change_password'] = u.get('must_change_password', False)
     return users
 
 @api_router.post("/users", response_model=User)
 async def create_user(user_data: UserCreate, current_user: User = Depends(get_current_user)):
+    """Admin creates a new user with a password. User must change password on first login."""
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
@@ -479,20 +481,29 @@ async def create_user(user_data: UserCreate, current_user: User = Depends(get_cu
     if existing:
         raise HTTPException(status_code=400, detail="User already exists")
     
+    # Validate password
+    if len(user_data.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
     user_id = f"user_{uuid.uuid4().hex[:12]}"
+    password_hash = hash_password(user_data.password)
+    
     new_user = {
         "user_id": user_id,
         "email": user_data.email,
         "name": user_data.name,
         "role": user_data.role,
+        "password_hash": password_hash,
+        "must_change_password": True,  # Force password change on first login
         "picture": None,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.users.insert_one(new_user)
     
-    user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
     if isinstance(user_doc['created_at'], str):
         user_doc['created_at'] = datetime.fromisoformat(user_doc['created_at'])
+    user_doc['must_change_password'] = True
     return User(**user_doc)
 
 @api_router.put("/users/{user_id}", response_model=User)
