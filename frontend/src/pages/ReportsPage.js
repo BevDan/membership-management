@@ -55,13 +55,13 @@ function ReportsPage() {
 
   const filterLabels = {
     'all': 'All Members',
+    'active_only': 'Active Members Only',
     'unfinancial': 'Unfinancial Members',
     'with_vehicle': 'Members with Vehicle',
     'unfinancial_with_vehicle': 'Unfinancial with Vehicle',
     'expiring_soon': 'Members Expiring Soon (within 2 months)',
     'vehicles_expiring_soon': 'Vehicles Log Book Expiring Soon (within 2 months)',
-    'expired_vehicles': 'Members With Expired Vehicles',
-    'inactive_only': 'Inactive Members Only'
+    'expired_vehicles': 'Members With Expired Vehicles'
   };
 
   const exportToCSV = () => {
