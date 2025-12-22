@@ -151,9 +151,24 @@ function ReportsPage() {
                   <SelectItem value="expiring_soon">Members Expiring Soon (within 2 months)</SelectItem>
                   <SelectItem value="vehicles_expiring_soon">Vehicles Log Book Expiring Soon (within 2 months)</SelectItem>
                   <SelectItem value="expired_vehicles">Members With Expired Vehicles</SelectItem>
+                  <SelectItem value="inactive_only">Inactive Members Only</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+            {filterType !== 'inactive_only' && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="includeInactive"
+                  checked={includeInactive}
+                  onChange={(e) => setIncludeInactive(e.target.checked)}
+                  className="w-4 h-4 rounded border-zinc-600 bg-zinc-950 text-primary focus:ring-primary"
+                />
+                <label htmlFor="includeInactive" className="text-sm text-zinc-400">
+                  Include inactive members
+                </label>
+              </div>
+            )}
             <div className="text-right">
               <p className="text-sm text-zinc-400">
                 Showing <span className="text-white font-bold">{members.length}</span> members
