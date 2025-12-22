@@ -13,6 +13,8 @@ function Dashboard({ user }) {
   const [stats, setStats] = useState({
     total_members: 0,
     financial_members: 0,
+    unfinancial_members: 0,
+    inactive_members: 0,
     life_members_financial: 0,
     life_members_unfinancial: 0,
     members_with_vehicle_financial: 0,
@@ -20,7 +22,7 @@ function Dashboard({ user }) {
     total_vehicles: 0,
     active_vehicles: 0,
     interest: { drag_racing: 0, car_enthusiast: 0, both: 0 },
-    membership_type: { full: 0, family: 0, junior: 0 }
+    membership_type: { full: 0, family: 0, junior: 0, inactive: 0 }
   });
   const [checkingExpired, setCheckingExpired] = useState(false);
 
