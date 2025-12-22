@@ -578,15 +578,16 @@ async def get_member_report(
 ):
     """
     Get member report with filters.
-    filter_type: all, active_only, unfinancial, with_vehicle, unfinancial_with_vehicle, 
+    filter_type: all, unfinancial, with_vehicle, unfinancial_with_vehicle, 
                  expiring_soon, vehicles_expiring_soon, expired_vehicles
+    Note: "all" shows everyone including inactive. All other filters exclude inactive members.
     """
     
     # Get all members
     members = await db.members.find({}, {"_id": 0}).to_list(10000)
     
-    # Filter for active_only - exclude inactive members
-    if filter_type == "active_only":
+    # For any filter OTHER than "all", exclude inactive members
+    if filter_type != "all":
         members = [m for m in members if not m.get("inactive")]
     
     # Get vehicles and create lookups
