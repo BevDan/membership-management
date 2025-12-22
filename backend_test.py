@@ -231,7 +231,8 @@ class DragClubAPITester:
                 "comments": "Updated by test",
                 "email1": None,  # Test null email handling
                 "email2": "",    # Test empty string handling
-                "phone2": None   # Test null phone handling
+                "phone2": None,   # Test null phone handling
+                "inactive": True  # Test inactive status update
             }
             response = self.make_request('PUT', f'members/{member_id}', token, update_data)
             success = response and response.status_code == 200
