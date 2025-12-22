@@ -237,7 +237,7 @@ async def get_current_user(request: Request, session_token: Optional[str] = Cook
 
 # Username/Password Authentication
 @api_router.post("/auth/register")
-async def register_user(user_data: UserRegister, response: Response):
+async def register_user(user_data: UserRegister, response: Response, request: Request):
     """Register a new user with email/password. First user becomes admin."""
     
     # Check if email already exists
@@ -274,12 +274,15 @@ async def register_user(user_data: UserRegister, response: Response):
         "created_at": datetime.now(timezone.utc).isoformat()
     })
     
+    # Detect if request is over HTTPS (via Cloudflare/proxy)
+    is_https = request.headers.get("X-Forwarded-Proto") == "https"
+    
     response.set_cookie(
         key="session_token",
         value=session_token,
         httponly=True,
-        secure=True,  # Required for SameSite=None
-        samesite="none",  # Allow cross-site cookies for production
+        secure=is_https,
+        samesite="none" if is_https else "lax",
         path="/",
         max_age=90*24*60*60
     )
