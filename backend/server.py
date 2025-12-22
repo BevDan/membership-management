@@ -235,12 +235,20 @@ async def get_current_user(request: Request, session_token: Optional[str] = Cook
     if isinstance(user_doc['created_at'], str):
         user_doc['created_at'] = datetime.fromisoformat(user_doc['created_at'])
     
+    # Add must_change_password field if missing
+    user_doc['must_change_password'] = user_doc.get('must_change_password', False)
+    
     return User(**user_doc)
 
 # Username/Password Authentication
 @api_router.post("/auth/register")
-async def register_user(user_data: UserRegister, response: Response, request: Request):
-    """Register a new user with email/password. First user becomes admin."""
+async def register_first_admin(user_data: UserCreate, response: Response, request: Request):
+    """Register the first admin user only. After that, only admins can create users."""
+    
+    # Check if any users exist
+    user_count = await db.users.count_documents({})
+    if user_count > 0:
+        raise HTTPException(status_code=403, detail="Registration closed. Contact an administrator to create your account.")
     
     # Check if email already exists
     existing = await db.users.find_one({"email": user_data.email})
@@ -248,10 +256,6 @@ async def register_user(user_data: UserRegister, response: Response, request: Re
         raise HTTPException(status_code=400, detail="Email already registered")
     
     # First user becomes admin
-    user_count = await db.users.count_documents({})
-    user_role = "admin" if user_count == 0 else "member_editor"
-    
-    # Create user
     user_id = f"user_{uuid.uuid4().hex[:12]}"
     password_hash = hash_password(user_data.password)
     
@@ -259,8 +263,9 @@ async def register_user(user_data: UserRegister, response: Response, request: Re
         "user_id": user_id,
         "email": user_data.email,
         "name": user_data.name,
-        "role": user_role,
+        "role": "admin",
         "password_hash": password_hash,
+        "must_change_password": False,
         "picture": None,
         "created_at": datetime.now(timezone.utc).isoformat()
     })
@@ -289,7 +294,7 @@ async def register_user(user_data: UserRegister, response: Response, request: Re
         max_age=90*24*60*60
     )
     
-    return {"message": "User registered successfully", "role": user_role}
+    return {"message": "Admin user created successfully", "role": "admin"}
 
 @api_router.post("/auth/login")
 async def login_user(credentials: UserLogin, response: Response, request: Request):
