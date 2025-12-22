@@ -109,6 +109,7 @@ class MemberCreate(BaseModel):
     email2: Optional[EmailStr] = None
     life_member: bool = False
     financial: bool = False
+    inactive: bool = False
     membership_type: Literal['Full', 'Family', 'Junior']
     family_members: Optional[List[str]] = None
     interest: Literal['Drag Racing', 'Car Enthusiast', 'Both']
