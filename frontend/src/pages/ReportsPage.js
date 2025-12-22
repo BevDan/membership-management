@@ -145,13 +145,13 @@ function ReportsPage() {
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800">
                   <SelectItem value="all">All Members</SelectItem>
+                  <SelectItem value="active_only">Active Members Only</SelectItem>
                   <SelectItem value="unfinancial">Unfinancial Members</SelectItem>
                   <SelectItem value="with_vehicle">Members with at least one Vehicle</SelectItem>
                   <SelectItem value="unfinancial_with_vehicle">Unfinancial Members with Vehicle</SelectItem>
                   <SelectItem value="expiring_soon">Members Expiring Soon (within 2 months)</SelectItem>
                   <SelectItem value="vehicles_expiring_soon">Vehicles Log Book Expiring Soon (within 2 months)</SelectItem>
                   <SelectItem value="expired_vehicles">Members With Expired Vehicles</SelectItem>
-                  <SelectItem value="inactive_only">Inactive Members Only</SelectItem>
                 </SelectContent>
               </Select>
             </div>
