@@ -340,7 +340,40 @@ async def login_user(credentials: UserLogin, response: Response, request: Reques
     if isinstance(user_doc['created_at'], str):
         user_doc['created_at'] = datetime.fromisoformat(user_doc['created_at'])
     
+    # Add must_change_password field if missing
+    user_doc['must_change_password'] = user_doc.get('must_change_password', False)
+    
     return User(**user_doc)
+
+@api_router.post("/auth/change-password")
+async def change_password(password_data: PasswordChange, current_user: User = Depends(get_current_user)):
+    """Change user password. Required on first login if must_change_password is true."""
+    
+    # Validate new passwords match
+    if password_data.new_password != password_data.confirm_password:
+        raise HTTPException(status_code=400, detail="New passwords do not match")
+    
+    # Validate password strength
+    if len(password_data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Get user with password hash
+    user = await db.users.find_one({"user_id": current_user.user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Verify current password
+    if not verify_password(password_data.current_password, user.get("password_hash", "")):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    
+    # Update password and clear must_change_password flag
+    new_hash = hash_password(password_data.new_password)
+    await db.users.update_one(
+        {"user_id": current_user.user_id},
+        {"$set": {"password_hash": new_hash, "must_change_password": False}}
+    )
+    
+    return {"message": "Password changed successfully"}
 
 @api_router.post("/auth/session")
 async def create_session(session_id: str, response: Response):
