@@ -841,7 +841,11 @@ async def update_member(member_id: str, member_data: MemberUpdate, current_user:
     for k, v in raw_data.items():
         # Include None values for optional string fields to allow clearing them
         if k in ['phone1', 'phone2', 'email1', 'email2', 'comments', 'state', 'date_paid', 'expiry_date']:
-            update_dict[k] = v  # Include None values to allow clearing
+            # Convert empty strings to None for date fields
+            if k in ['date_paid', 'expiry_date'] and v == '':
+                update_dict[k] = None
+            else:
+                update_dict[k] = v  # Include None values to allow clearing
         elif v is not None:
             update_dict[k] = v
     
