@@ -51,10 +51,23 @@ function AdminPage({ user }) {
       const options = response.data;
       setVehicleOptions({
         statuses: options.filter(o => o.type === 'status'),
-        reasons: options.filter(o => o.type === 'reason')
+        reasons: options.filter(o => o.type === 'reason'),
+        bodyStyles: options.filter(o => o.type === 'body_style')
       });
     } catch (error) {
       toast.error('Failed to load vehicle options');
+    }
+  };
+
+  const initDefaultBodyStyles = async () => {
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/vehicle-options/init-defaults`, {}, {
+        withCredentials: true
+      });
+      toast.success(response.data.message);
+      loadVehicleOptions();
+    } catch (error) {
+      toast.error('Failed to initialize body styles');
     }
   };
 
