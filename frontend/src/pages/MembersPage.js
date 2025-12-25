@@ -30,7 +30,7 @@ function MembersPage({ user }) {
   const [memberVehicles, setMemberVehicles] = useState([]);
   const [showVehicleDialog, setShowVehicleDialog] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
-  const [vehicleOptions, setVehicleOptions] = useState({ statuses: [], reasons: [] });
+  const [vehicleOptions, setVehicleOptions] = useState({ statuses: [], reasons: [], bodyStyles: [] });
   const [vehicleFormData, setVehicleFormData] = useState({
     log_book_number: '',
     entry_date: '',
