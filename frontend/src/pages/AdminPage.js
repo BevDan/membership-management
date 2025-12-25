@@ -547,6 +547,7 @@ function AdminPage({ user }) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800">
+                  <SelectItem value="body_style">Body Style</SelectItem>
                   <SelectItem value="status">Status</SelectItem>
                   <SelectItem value="reason">Reason</SelectItem>
                 </SelectContent>
