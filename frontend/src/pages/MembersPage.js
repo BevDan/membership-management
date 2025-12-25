@@ -748,25 +748,32 @@ function MembersPage({ user }) {
                   value={suburbInput}
                   onChange={(e) => {
                     setSuburbInput(e.target.value);
+                    setFormData({ ...formData, suburb: e.target.value });
                     setShowSuburbDropdown(true);
                   }}
                   onFocus={() => setShowSuburbDropdown(true)}
+                  onBlur={() => {
+                    // Delay hiding to allow click on dropdown items
+                    setTimeout(() => setShowSuburbDropdown(false), 200);
+                  }}
                   placeholder="Type or select suburb"
                   className="bg-zinc-950 border-zinc-800"
                 />
-                {showSuburbDropdown && filteredSuburbs.length > 0 && suburbInput && (
-                  <div className="absolute z-50 w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-sm max-h-48 overflow-y-auto">
-                    {filteredSuburbs.slice(0, 10).map((suburb, idx) => (
+                {showSuburbDropdown && filteredSuburbs.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-sm max-h-48 overflow-y-auto shadow-lg">
+                    {filteredSuburbs.slice(0, 10).map((suburbData, idx) => (
                       <div
                         key={idx}
-                        onClick={() => {
-                          setSuburbInput(suburb);
-                          setFormData({ ...formData, suburb: suburb });
-                          setShowSuburbDropdown(false);
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          handleSuburbSelect(suburbData);
                         }}
-                        className="px-3 py-2 hover:bg-zinc-800 cursor-pointer font-mono text-sm text-zinc-300"
+                        className="px-3 py-2 hover:bg-zinc-800 cursor-pointer font-mono text-sm text-zinc-300 flex justify-between"
                       >
-                        {suburb}
+                        <span>{suburbData.suburb}</span>
+                        {suburbData.postcode && (
+                          <span className="text-zinc-500">{suburbData.postcode}</span>
+                        )}
                       </div>
                     ))}
                   </div>
