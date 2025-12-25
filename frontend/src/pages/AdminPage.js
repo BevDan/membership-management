@@ -310,7 +310,41 @@ function AdminPage({ user }) {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <h3 className="font-display text-lg font-bold text-white mb-3">BODY STYLE OPTIONS</h3>
+                  {vehicleOptions.bodyStyles.length === 0 && (
+                    <Button
+                      onClick={initDefaultBodyStyles}
+                      variant="outline"
+                      size="sm"
+                      className="mb-3 border-zinc-700 text-xs"
+                    >
+                      Initialize Default Body Styles
+                    </Button>
+                  )}
+                  <div className="space-y-2">
+                    {vehicleOptions.bodyStyles.map((option) => (
+                      <Card
+                        key={option.option_id}
+                        data-testid={`body-style-option-${option.value}`}
+                        className="bg-zinc-950 border-zinc-800 p-3 rounded-sm flex items-center justify-between"
+                      >
+                        <span className="font-mono text-sm text-white">{option.value}</span>
+                        <Button
+                          data-testid={`delete-body-style-${option.value}`}
+                          onClick={() => handleDeleteOption(option.option_id)}
+                          variant="outline"
+                          size="sm"
+                          className="border-zinc-700 hover:border-red-500"
+                        >
+                          <Trash className="w-3 h-3" />
+                        </Button>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+
                 <div>
                   <h3 className="font-display text-lg font-bold text-white mb-3">STATUS OPTIONS</h3>
                   <div className="space-y-2">
