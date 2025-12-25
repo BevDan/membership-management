@@ -408,8 +408,18 @@ function MembersPage({ user }) {
   };
 
   const filteredSuburbs = suburbs.filter(s => 
-    s.toLowerCase().includes(suburbInput.toLowerCase())
+    s.suburb.toLowerCase().includes(suburbInput.toLowerCase())
   );
+
+  const handleSuburbSelect = (suburbData) => {
+    setSuburbInput(suburbData.suburb);
+    setFormData({ 
+      ...formData, 
+      suburb: suburbData.suburb,
+      postcode: suburbData.postcode || formData.postcode
+    });
+    setShowSuburbDropdown(false);
+  };
 
   const handleDelete = async (memberId) => {
     if (!window.confirm('Are you sure you want to delete this member? All associated vehicles will also be deleted.')) {
