@@ -420,11 +420,32 @@ function VehiclesPage({ user }) {
             </div>
             <div>
               <Label className="text-zinc-400 font-mono text-xs">Body Style *</Label>
-              <Input
+              <Select
                 value={formData.body_style}
-                onChange={(e) => setFormData({ ...formData, body_style: e.target.value })}
-                className="bg-zinc-950 border-zinc-800 font-mono"
-              />
+                onValueChange={(value) => setFormData({ ...formData, body_style: value })}
+              >
+                <SelectTrigger className="bg-zinc-950 border-zinc-800 font-mono">
+                  <SelectValue placeholder="Select body style" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-zinc-800">
+                  {vehicleOptions.bodyStyles.length > 0 ? (
+                    vehicleOptions.bodyStyles.map(opt => (
+                      <SelectItem key={opt.option_id} value={opt.value}>{opt.value}</SelectItem>
+                    ))
+                  ) : (
+                    <>
+                      <SelectItem value="Coupe">Coupe</SelectItem>
+                      <SelectItem value="ICV">ICV</SelectItem>
+                      <SelectItem value="Sedan">Sedan</SelectItem>
+                      <SelectItem value="Solo">Solo</SelectItem>
+                      <SelectItem value="Station Wagon">Station Wagon</SelectItem>
+                      <SelectItem value="Truck">Truck</SelectItem>
+                      <SelectItem value="Utility">Utility</SelectItem>
+                      <SelectItem value="Van">Van</SelectItem>
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label className="text-zinc-400 font-mono text-xs">Year *</Label>
