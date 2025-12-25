@@ -1125,6 +1125,33 @@ async def get_vehicle_options(type: Optional[str] = None, current_user: User = D
             opt['created_at'] = datetime.fromisoformat(opt['created_at'])
     return options
 
+@api_router.post("/vehicle-options/init-defaults")
+async def init_default_vehicle_options(current_user: User = Depends(get_current_user)):
+    """Initialize default body style options if none exist"""
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Check if body_style options already exist
+    existing = await db.vehicle_options.count_documents({"type": "body_style"})
+    if existing > 0:
+        return {"message": f"Body style options already exist ({existing} found)", "created": 0}
+    
+    # Default body styles
+    default_body_styles = ["Coupe", "ICV", "Sedan", "Solo", "Station Wagon", "Truck", "Utility", "Van"]
+    
+    created = 0
+    for style in default_body_styles:
+        option_id = f"option_{uuid.uuid4().hex[:12]}"
+        await db.vehicle_options.insert_one({
+            "option_id": option_id,
+            "type": "body_style",
+            "value": style,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        created += 1
+    
+    return {"message": f"Created {created} default body style options", "created": created}
+
 @api_router.post("/vehicle-options", response_model=VehicleOption)
 async def create_vehicle_option(option_data: VehicleOptionCreate, current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
