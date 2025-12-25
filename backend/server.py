@@ -192,12 +192,12 @@ class VehicleUpdate(BaseModel):
 
 class VehicleOption(BaseModel):
     option_id: str
-    type: Literal['status', 'reason']
+    type: Literal['status', 'reason', 'body_style']
     value: str
     created_at: datetime
 
 class VehicleOptionCreate(BaseModel):
-    type: Literal['status', 'reason']
+    type: Literal['status', 'reason', 'body_style']
     value: str
 
 class ExportFilters(BaseModel):
