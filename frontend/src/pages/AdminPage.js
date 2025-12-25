@@ -16,7 +16,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 function AdminPage({ user }) {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const [vehicleOptions, setVehicleOptions] = useState({ statuses: [], reasons: [] });
+  const [vehicleOptions, setVehicleOptions] = useState({ statuses: [], reasons: [], bodyStyles: [] });
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showOptionDialog, setShowOptionDialog] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
