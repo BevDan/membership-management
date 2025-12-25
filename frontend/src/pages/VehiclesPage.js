@@ -23,7 +23,7 @@ function VehiclesPage({ user }) {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
-  const [vehicleOptions, setVehicleOptions] = useState({ statuses: [], reasons: [] });
+  const [vehicleOptions, setVehicleOptions] = useState({ statuses: [], reasons: [], bodyStyles: [] });
   const [formData, setFormData] = useState({
     member_id: '',
     log_book_number: '',
