@@ -128,7 +128,8 @@ function MembersPage({ user }) {
       const options = response.data;
       setVehicleOptions({
         statuses: options.filter(o => o.type === 'status'),
-        reasons: options.filter(o => o.type === 'reason')
+        reasons: options.filter(o => o.type === 'reason'),
+        bodyStyles: options.filter(o => o.type === 'body_style')
       });
     } catch (error) {
       console.error('Failed to load vehicle options');
