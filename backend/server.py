@@ -563,9 +563,22 @@ async def get_members(
     return members
 
 @api_router.get("/members/suburbs/list")
-async def get_suburbs(current_user: User = Depends(get_current_user)):
-    suburbs = await db.members.distinct("suburb")
-    return sorted([s for s in suburbs if s])
+async def get_suburbs_list(current_user: User = Depends(get_current_user)):
+    """Get unique suburb/postcode combinations from existing members for autocomplete"""
+    members = await db.members.find({}, {"_id": 0, "suburb": 1, "postcode": 1}).to_list(10000)
+    
+    # Create a dict of suburb -> postcode (use first found postcode for each suburb)
+    suburb_map = {}
+    for m in members:
+        suburb = m.get("suburb", "").strip()
+        postcode = m.get("postcode", "").strip()
+        if suburb and suburb not in suburb_map:
+            suburb_map[suburb] = postcode
+    
+    # Return as sorted list of objects
+    suburbs = [{"suburb": s, "postcode": p} for s, p in suburb_map.items()]
+    suburbs.sort(key=lambda x: x["suburb"].lower())
+    return suburbs
 
 @api_router.get("/stats/dashboard")
 async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
