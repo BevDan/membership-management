@@ -1112,6 +1112,26 @@ async def delete_vehicle_permanent(vehicle_id: str, current_user: User = Depends
         raise HTTPException(status_code=404, detail="Vehicle not found")
     return {"message": "Vehicle permanently deleted"}
 
+
+@api_router.get("/suburbs")
+async def get_suburbs(current_user: User = Depends(get_current_user)):
+    """Get unique suburb/postcode combinations from existing members for autocomplete"""
+    members = await db.members.find({}, {"_id": 0, "suburb": 1, "postcode": 1}).to_list(10000)
+    
+    # Create a dict of suburb -> postcode (use first found postcode for each suburb)
+    suburb_map = {}
+    for m in members:
+        suburb = m.get("suburb", "").strip()
+        postcode = m.get("postcode", "").strip()
+        if suburb and suburb not in suburb_map:
+            suburb_map[suburb] = postcode
+    
+    # Return as sorted list of objects
+    suburbs = [{"suburb": s, "postcode": p} for s, p in suburb_map.items()]
+    suburbs.sort(key=lambda x: x["suburb"].lower())
+    return suburbs
+
+
 @api_router.get("/vehicle-options", response_model=List[VehicleOption])
 async def get_vehicle_options(type: Optional[str] = None, current_user: User = Depends(get_current_user)):
     
